@@ -1,0 +1,6 @@
+enum E_DIRECTION
+{
+   DIR_LONG,
+   DIR_SHORT,
+   DIR_NONE
+};
