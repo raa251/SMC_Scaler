@@ -1,0 +1,28 @@
+#include <Trade\Trade.mqh>
+#include <Trade\PositionInfo.mqh>
+#include <Trade\AccountInfo.mqh>
+#include <Trade\SymbolInfo.mqh>
+
+#include "StateMachine/M_StateMachine.mqh"
+
+#include "Structs/stGlobalVars.mqh"
+
+#include "Utilities/Log/M_LogError.mqh"
+#include "Utilities/Log/M_LogInfo.mqh"
+#include "Utilities/Log/M_LogWarning.mqh"
+#include "Utilities/M_CalculateLotSize.mqh"
+#include "Utilities/M_DetermineTimes.mqh"
+#include "Utilities/M_GetCandleData.mqh"
+#include "Utilities/M_NewBar_CurrTF.mqh"
+#include "Utilities/M_Points2Price.mqh"
+
+#include "Filters/M_NewsOK.mqh"
+#include "Filters/M_FiltersOK.mqh"
+#include "Filters/M_GetCurrencyByEvent.mqh"
+#include "Filters/M_SessionFilterOK.mqh"
+#include "Filters/M_SpreadOK.mqh"
+#include "Filters/M_MaxTradesPerDayOK.mqh"
+#include "Filters/M_MaxDailyProfitOK.mqh"
+
+#include "Visualize/Label/M_ChangeLabelText.mqh"
+#include "Visualize/Label/M_CreateLabel.mqh"
