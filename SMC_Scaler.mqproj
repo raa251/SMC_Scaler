@@ -219,7 +219,12 @@
       "relative_to_project":true
     },
     {
-      "path":"StateMachine\\M_SM_WAIT_INVERSE_FVG.mqh",
+      "path":"StateMachine\\M_SM_SEARCH_INVERSE_FVG.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"StateMachine\\M_SM_WAIT_FVG_INVERSED.mqh",
       "compile":false,
       "relative_to_project":true
     }

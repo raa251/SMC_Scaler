@@ -1,4 +1,4 @@
-void M_SM_WAIT_INVERSE_FVG()
+void M_SM_SEARCH_INVERSE_FVG()
 {
    // Search for the last FVG
    int NrCLDs = MathMin(nCandlesLookbackFVG, 97);
@@ -25,7 +25,7 @@ void M_SM_WAIT_INVERSE_FVG()
             M_CreateBox(stGVL.Rect_FVG, stGVL.Rect_ActFVG_Number, barTimeFVGStart, barTime, stGVL.LastFVGTop, stGVL.LastFVGBottom, clrAquamarine);
             
             M_LogInfo("FVG to inverse found, TOP=" + DoubleToString(stGVL.LastFVGTop) + " BOTTOM=" + DoubleToString(stGVL.LastFVGBottom) + " Index=" + IntegerToString(stGVL.LastFVGIndex));
-            stGVL.nStateMachine = SM_WAIT_FVG_INVERTED;
+            stGVL.eStateMachine = SM_WAIT_FVG_INVERSED;
             break; // Fair value gap found - exit
          }
       }
@@ -51,7 +51,7 @@ void M_SM_WAIT_INVERSE_FVG()
             
             M_LogInfo("FVG to inverse found, TOP=" + DoubleToString(stGVL.LastFVGTop) + " BOTTOM=" + DoubleToString(stGVL.LastFVGBottom) + " Index=" + IntegerToString(stGVL.LastFVGIndex));
             
-            stGVL.nStateMachine = SM_WAIT_FVG_INVERTED;
+            stGVL.eStateMachine = SM_WAIT_FVG_INVERSED;
             break; // Fair value gap found - exit
          }
       }
@@ -59,7 +59,7 @@ void M_SM_WAIT_INVERSE_FVG()
       if(NrCLDs == i) // Last loop run through, no FVG found
       {
          M_LogWarning("No FVG to inverse found in last " + IntegerToString(NrCLDs) + " Candles!");
-         stGVL.nStateMachine = SM_RESET;
+         stGVL.eStateMachine = SM_RESET;
          break;
       }
    }
