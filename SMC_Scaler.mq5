@@ -24,9 +24,10 @@ input string   Section_Strategy        = "";    // ---STRATEGY---
 input double   fRiskReward = 2.0;               // Risk reward ratio
 input int      nNumberOfCandlesLow = 10;        // Number of candles to look for low
 input int      nCandlesLookbackFVG = 5;         // Number of candles to look back for fair value gap
+input int      nMaxCandlesFVGInverse = 5;       // Maximum candles to inverse FVG
 input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search
-//input bool     bRunnerPosition = false;       // Runner position (closing when EMAs cross)
-//input int      nDistanceMoveRunnerSLTP1 = 0;  // Distance to move SL of runner to TP1
+input bool     bRunnerPosition = false;       // Runner position (closing when EMAs cross)
+input int      nDistanceMoveRunnerSLTP1 = 0;  // Distance to move SL of runner to TP1
 
 // Time filter parameters
 input string   Section_TimeFilter      = ""; // ---TIME FILTER---
@@ -73,6 +74,7 @@ int OnInit()
    
    nMaxCandles = nNumberOfCandlesLow + 1;
    nMaxCandles = MathMax(nCandlesLookbackFVG + 1,nMaxCandles);
+   nMaxCandles = MathMax(nMaxCandlesFVGInverse + 1,nMaxCandles);
    
    nMaxCandlesHigherTF = 3 + 1; // 3 Candles are needed for FVG + 1 because the first one is not closed yet
    

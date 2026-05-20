@@ -40,4 +40,5 @@ struct stGlobalVars
    double LastFVGTop;
    double LastFVGBottom;
    int LastFVGIndex;
+   datetime dtFVGReached_Time;
 };

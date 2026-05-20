@@ -6,5 +6,10 @@ void M_SM_RESET()
    stGVL.Entry = 0;
    stGVL.eCurrentDirection = DIR_NONE;
    
+   stGVL.LastFVGTop = 0;
+   stGVL.LastFVGBottom = 0;
+   stGVL.LastFVGIndex = 0;
+   stGVL.dtFVGReached_Time = 0;
+   
    stGVL.eStateMachine = SM_RESET;
 }
