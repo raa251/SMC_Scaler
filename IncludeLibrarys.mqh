@@ -14,6 +14,7 @@
 #include "Utilities/M_DetermineTimes.mqh"
 #include "Utilities/M_GetCandleData.mqh"
 #include "Utilities/M_NewBar_CurrTF.mqh"
+#include "Utilities/M_NewBar_HigherTF.mqh"
 #include "Utilities/M_Points2Price.mqh"
 
 #include "Filters/M_NewsOK.mqh"
@@ -26,3 +27,7 @@
 
 #include "Visualize/Label/M_ChangeLabelText.mqh"
 #include "Visualize/Label/M_CreateLabel.mqh"
+#include "Visualize/Box/M_CreateBox.mqh"
+#include "Visualize/Box/M_ExtendBox.mqh"
+#include "Visualize/Box/M_HandleBoxes.mqh"
+#include "Visualize/Box/M_SetBoxNames.mqh"

@@ -7,11 +7,14 @@ struct stGlobalVars
    E_StateMachine eStateMachine;
    E_StateMachine eStateMachine_Last;
    MqlRates Candle[];
+   MqlRates CandleHigherTF[];
    datetime dtCurrentTime;
    datetime dtCurrentDay;
    datetime dtLastDay;
    datetime dtTimeCurrent_CurrTF;
    datetime dtTimeLast_CurrTF;
+   datetime dtTimeCurrent_HigherTF;
+   datetime dtTimeLast_HigherTF;
    int nActualHour;
    int nNumberOfTrades;
    int nNumberOfPositions;
@@ -31,4 +34,10 @@ struct stGlobalVars
    
    datetime ServerTime;
    datetime GMTTime;
+   
+   string Rect_FVG;
+   int Rect_ActFVG_Number;
+   double LastFVGTop;
+   double LastFVGBottom;
+   int LastFVGIndex;
 };

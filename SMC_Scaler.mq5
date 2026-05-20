@@ -17,13 +17,15 @@ input int      nMaxTradesPerDay = 5;         // Maximum trades per day
 input double   fLossPerLot = 0;              // Loss per lot in dollar
 input int      nMaxSpread = 0;               // Maximum spread in points
 input double   nMaxDailyProfit = 0;          // Maximum daily profit in percent
+input double   nMaxDailyLoss = 0;            // Maximum daily loss in percent
 
 // Strategy parameters
-input string   Section_Strategy        = ""; // ---STRATEGY---
-input double   fRiskReward = 2.0;            // Risk reward ratio
-input int      nNumberOfCandlesLow = 10;     // Number of candles to look for low
-//input bool     bRunnerPosition = false;      // Runner position (closing when EMAs cross)
-//input int      nDistanceMoveRunnerSLTP1 = 0; // Distance to move SL of runner to TP1
+input string   Section_Strategy        = "";    // ---STRATEGY---
+input double   fRiskReward = 2.0;               // Risk reward ratio
+input int      nNumberOfCandlesLow = 10;        // Number of candles to look for low
+input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search
+//input bool     bRunnerPosition = false;       // Runner position (closing when EMAs cross)
+//input int      nDistanceMoveRunnerSLTP1 = 0;  // Distance to move SL of runner to TP1
 
 // Time filter parameters
 input string   Section_TimeFilter      = ""; // ---TIME FILTER---
@@ -50,6 +52,7 @@ input datetime dtDebugTime;                  // Debug time breakpoint (only for 
 stGlobalVars stGVL;
 CTrade Trade;
 int nMaxCandles;
+int nMaxCandlesHigherTF;
 datetime tmpDebugTime;
 
 //+------------------------------------------------------------------+
@@ -61,11 +64,14 @@ int OnInit()
    
    tmpDebugTime = dtDebugTime;
    
+   M_SetBoxNames();
+   
    M_CreateLabel("FilterLabel",5,10);
    M_CreateLabel("GMTTime",5,40);
    M_CreateLabel("ServerTime",5,80);
    
    nMaxCandles = nNumberOfCandlesLow + 1;
+   nMaxCandlesHigherTF = 3 + 1; // 3 Candles are needed for FVG + 1 because the first one is not closed yet
    
    return(INIT_SUCCEEDED);
 }
@@ -83,6 +89,7 @@ void OnDeinit(const int reason)
 void OnTick()
 {
    M_GetCandleData(PERIOD_CURRENT, stGVL.Candle, nMaxCandles);
+   M_GetCandleData(eHigherTF, stGVL.CandleHigherTF, nMaxCandlesHigherTF);
    
    M_DetermineTimes();
    
