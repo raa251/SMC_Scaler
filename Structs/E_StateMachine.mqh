@@ -2,6 +2,7 @@ enum E_StateMachine
 {
    SM_WAIT_FOR_START,
    SM_WAIT_FVG_REACHED,
+   SM_WAIT_INVERSE_FVG,
    SM_IN_TRADE,
    SM_RESET
 };

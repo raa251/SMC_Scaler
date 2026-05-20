@@ -1,5 +1,9 @@
 void M_NewBar_HigherTF()
 {
+   if(stGVL.eStateMachine != SM_WAIT_FOR_START)
+   {
+      return;
+   }
    if(stGVL.Candle[2].open < stGVL.Candle[2].close) // middle candle is bullish
    {
       // Check for gap
@@ -10,7 +14,9 @@ void M_NewBar_HigherTF()
          stGVL.LastFVGTop     = stGVL.Candle[1].low;
          stGVL.LastFVGBottom  = stGVL.Candle[3].high;
          stGVL.LastFVGIndex   = 2;
-               
+         
+         stGVL.eCurrentDirection = DIR_LONG;
+         
          datetime barTime = iTime(_Symbol, eHigherTF, 0);
          datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex);
          stGVL.Rect_ActFVG_Number = stGVL.Rect_ActFVG_Number + 1;
@@ -30,7 +36,9 @@ void M_NewBar_HigherTF()
          stGVL.LastFVGTop     = stGVL.Candle[3].low;
          stGVL.LastFVGBottom  = stGVL.Candle[1].high;
          stGVL.LastFVGIndex   = 2;
-               
+         
+         stGVL.eCurrentDirection = DIR_SHORT;
+         
          datetime barTime = iTime(_Symbol, PERIOD_CURRENT, 0);
          datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex);
          stGVL.Rect_ActFVG_Number = stGVL.Rect_ActFVG_Number + 1;

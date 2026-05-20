@@ -1,6 +1,7 @@
 #include "M_SM_IN_TRADE.mqh"
 #include "M_SM_RESET.mqh"
 #include "M_SM_WAIT_FOR_START.mqh"
+#include "M_SM_WAIT_FVG_REACHED.mqh"
 
 void M_StateMachine()
 {
@@ -8,6 +9,10 @@ void M_StateMachine()
    {
       case SM_WAIT_FOR_START:
          M_SM_WAIT_FOR_START();
+         break;
+         
+      case SM_WAIT_FVG_REACHED:
+         M_SM_WAIT_FVG_REACHED();
          break;
          
       case SM_IN_TRADE:
