@@ -43,5 +43,15 @@ struct stGlobalVars
    datetime dtFVGReached_Time;
    datetime dtFVGCreated_Time;
    
-   bool bWaitForNextHigherTFCandle;
+   int nSmallEMAHandle;
+   int nBigEMAHandle;
+   double SmallEMABuffer[];
+   double BigEMABuffer[];
+   
+   int nSmallEMAHandle_CurrTF;
+   int nBigEMAHandle_CurrTF;
+   double SmallEMABuffer_CurrTF[];
+   double BigEMABuffer_CurrTF[];
+   
+   double fMinDiffEMA_Price;
 };

@@ -5,6 +5,8 @@ void M_NewBar_CurrTF()
       tmpDebugTime = stGVL.dtCurrentTime;
    }
    
+   M_CalcCurrentEMA();
+   
    if(stGVL.dtTimeCurrent_HigherTF != stGVL.dtTimeLast_HigherTF)
    {
       M_NewBar_HigherTF();

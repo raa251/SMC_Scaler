@@ -237,6 +237,36 @@
       "path":"Utilities\\M_NewDay.mqh",
       "compile":false,
       "relative_to_project":true
+    },
+    {
+      "path":"Filters\\EMA\\M_CalcCurrentEMA.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Filters\\EMA\\M_EMA_INIT.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Filters\\EMA\\M_EMACloseBuy.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Filters\\EMA\\M_EMACloseSell.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Filters\\EMA\\M_EMABearish.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Filters\\EMA\\M_EMABullish.mqh",
+      "compile":false,
+      "relative_to_project":true
     }
   ]
 }

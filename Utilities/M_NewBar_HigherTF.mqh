@@ -6,10 +6,19 @@ void M_NewBar_HigherTF()
    }
    if(stGVL.CandleHigherTF[2].open < stGVL.CandleHigherTF[2].close) // middle candle is bullish
    {
-      // Check for gap
-      bool Condition1 = stGVL.CandleHigherTF[3].high < stGVL.CandleHigherTF[1].low;
+      bool bCondition1 = stGVL.CandleHigherTF[3].high < stGVL.CandleHigherTF[1].low;
       
-      if(Condition1)
+      bool bCondition2 = M_EMABullish(true);
+      
+      if(!bCondition1)
+      {
+         return; // No FVG
+      }
+      else if(!bCondition2)
+      {
+         return; // EMA is not bullish
+      }
+      else
       { // fair value gap
          stGVL.LastFVGTop     = stGVL.CandleHigherTF[1].low;
          stGVL.LastFVGBottom  = stGVL.CandleHigherTF[3].high;
@@ -29,10 +38,19 @@ void M_NewBar_HigherTF()
    }
    else if(stGVL.CandleHigherTF[2].open > stGVL.CandleHigherTF[2].close) // middle candle is bearish
    {
-      // Gap between Candle i and i+2 existing and is big enough
-      bool Condition1 = stGVL.CandleHigherTF[1].high < stGVL.CandleHigherTF[3].low;
+      bool bCondition1 = stGVL.CandleHigherTF[1].high < stGVL.CandleHigherTF[3].low;
       
-      if(Condition1)
+      bool bCondition2 = M_EMABearish(true);
+      
+      if(!bCondition1)
+      {
+         return; // No FVG
+      }
+      else if(!bCondition2)
+      {
+         return; // EMA is not bearish
+      }
+      else
       { // fair value gap
          stGVL.LastFVGTop     = stGVL.CandleHigherTF[3].low;
          stGVL.LastFVGBottom  = stGVL.CandleHigherTF[1].high;

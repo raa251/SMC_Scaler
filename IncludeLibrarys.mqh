@@ -3,6 +3,13 @@
 #include <Trade\AccountInfo.mqh>
 #include <Trade\SymbolInfo.mqh>
 
+#include "Filters/EMA/M_CalcCurrentEMA.mqh"
+#include "Filters/EMA/M_EMA_INIT.mqh"
+#include "Filters/EMA/M_EMABearish.mqh"
+#include "Filters/EMA/M_EMABullish.mqh"
+#include "Filters/EMA/M_EMACloseBuy.mqh"
+#include "Filters/EMA/M_EMACloseSell.mqh"
+
 #include "StateMachine/M_StateMachine.mqh"
 
 #include "Structs/stGlobalVars.mqh"

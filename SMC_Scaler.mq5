@@ -37,6 +37,14 @@ input int      nEndTime1 = 20;               // End time
 input int      nStartTime2 = -1;             // Start time
 input int      nEndTime2 = -1;               // End time
 
+// EMA filter parameters
+input string   Section_EMAFilter     = ""; // ---EMA FILTER---
+input bool bEMAActive = false;                        // EMA filter active
+input ENUM_TIMEFRAMES eEMATimeframe = PERIOD_CURRENT; // EMA timeframe
+input int nSmallEMALength = 20;                       // Small EMA length
+input int nBigEMALength = 50;                         // Big EMA length
+input int nMinDiffEMA = 0;                            // Minimum difference between small and big EMA
+
 // News filter parameters
 input string   Section_NewsFilter      = ""; // ---NEWS FILTER---
 input int      nNewsMinutesBefore = 30;                                          // No entries before news in minutes
@@ -68,6 +76,8 @@ int OnInit()
    tmpDebugTime = dtDebugTime;
    
    M_SetBoxNames();
+   
+   M_EMA_INIT();
    
    M_CreateLabel("FilterLabel",5,10);
    M_CreateLabel("GMTTime",5,40);

@@ -1,28 +1,38 @@
-void M_CalcCurrentEMA()
+bool M_CalcCurrentEMA()
 {
-   ResetLastError();
-   if(CopyBuffer(stGVL.EMA1Handle, 0, 0, nMaxCandles, stGVL.EMA1Buffer) <= 0)
+   if(bEMAActive)
    {
-      M_LogError("Failed to copy EMA1 buffer, error: " + IntegerToString(GetLastError()));
+      ResetLastError();
+      if(CopyBuffer(stGVL.nSmallEMAHandle, 0, 0, nMaxCandles, stGVL.SmallEMABuffer) <= 0)
+      {
+         string Message = "Failed to copy EMA buffer, error: " + IntegerToString(GetLastError());
+         M_LogError(Message);
+      }
+      
+      ResetLastError();
+      if(CopyBuffer(stGVL.nBigEMAHandle, 0, 0, nMaxCandles, stGVL.BigEMABuffer) <= 0)
+      {
+         string Message = "Failed to copy EMA buffer, error: " + IntegerToString(GetLastError());
+         M_LogError(Message);
+      }
    }
    
-   ResetLastError();
-   if(CopyBuffer(stGVL.EMA2Handle, 0, 0, nMaxCandles, stGVL.EMA2Buffer) <= 0)
+   if(bRunnerPosition)
    {
-      M_LogError("Failed to copy EMA2 buffer, error: " + IntegerToString(GetLastError()));
+      ResetLastError();
+      if(CopyBuffer(stGVL.nSmallEMAHandle_CurrTF, 0, 0, nMaxCandles, stGVL.SmallEMABuffer_CurrTF) <= 0)
+      {
+         string Message = "Failed to copy EMA buffer, error: " + IntegerToString(GetLastError());
+         M_LogError(Message);
+      }
+      
+      ResetLastError();
+      if(CopyBuffer(stGVL.nBigEMAHandle_CurrTF, 0, 0, nMaxCandles, stGVL.BigEMABuffer_CurrTF) <= 0)
+      {
+         string Message = "Failed to copy EMA buffer, error: " + IntegerToString(GetLastError());
+         M_LogError(Message);
+      }
    }
    
-   ResetLastError();
-   if(CopyBuffer(stGVL.EMA3Handle, 0, 0, nMaxCandles, stGVL.EMA3Buffer) <= 0)
-   {
-      M_LogError("Failed to copy EMA3 buffer, error: " + IntegerToString(GetLastError()));
-   }
-   
-   ResetLastError();
-   if(CopyBuffer(stGVL.EMA4Handle, 0, 0, nMaxCandles, stGVL.EMA4Buffer) <= 0)
-   {
-      M_LogError("Failed to copy EMA4 buffer, error: " + IntegerToString(GetLastError()));
-   }
-   
-   
+   return true;
 }
