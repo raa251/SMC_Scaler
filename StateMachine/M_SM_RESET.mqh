@@ -11,5 +11,5 @@ void M_SM_RESET()
    stGVL.LastFVGIndex = 0;
    stGVL.dtFVGReached_Time = 0;
    
-   stGVL.eStateMachine = SM_RESET;
+   stGVL.eStateMachine = SM_WAIT_FOR_START;
 }

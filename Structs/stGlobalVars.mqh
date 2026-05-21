@@ -41,4 +41,7 @@ struct stGlobalVars
    double LastFVGBottom;
    int LastFVGIndex;
    datetime dtFVGReached_Time;
+   datetime dtFVGCreated_Time;
+   
+   bool bWaitForNextHigherTFCandle;
 };

@@ -24,6 +24,12 @@ bool M_FiltersOK(bool bLog)
       return false;
    }
    
+   if(!M_MaxDailyLossOK(bLog))
+   {
+      M_ChangeLabelText("FilterLabel", "Maximum daily loss reached");
+      return false;
+   }
+   
    M_ChangeLabelText("FilterLabel", "Looking for trades");
    
    return true;

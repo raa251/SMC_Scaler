@@ -16,6 +16,7 @@
 #include "Utilities/M_NewBar_CurrTF.mqh"
 #include "Utilities/M_NewBar_HigherTF.mqh"
 #include "Utilities/M_Points2Price.mqh"
+#include "Utilities/M_NewDay.mqh"
 
 #include "Filters/M_NewsOK.mqh"
 #include "Filters/M_FiltersOK.mqh"
@@ -24,6 +25,7 @@
 #include "Filters/M_SpreadOK.mqh"
 #include "Filters/M_MaxTradesPerDayOK.mqh"
 #include "Filters/M_MaxDailyProfitOK.mqh"
+#include "Filters/M_MaxDailyLossOK.mqh"
 
 #include "Visualize/Label/M_ChangeLabelText.mqh"
 #include "Visualize/Label/M_CreateLabel.mqh"

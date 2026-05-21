@@ -1,9 +1,17 @@
 void M_SM_WAIT_FVG_REACHED()
 {
-   if(stGVL.eCurrentDirection == DIR_LONG)
+   int FVGCreatedIndex = iBarShift(_Symbol, PERIOD_CURRENT, stGVL.dtFVGCreated_Time);
+   if(FVGCreatedIndex > nMaxCandlesToReachFVG || (nMaxCandlesToReachFVG < 0 || nMaxCandlesToReachFVG > 100))
+   {
+      M_LogWarning("Abort because the FVG got not reached within " + IntegerToString(nMaxCandlesToReachFVG) + ", Index=" + IntegerToString(FVGCreatedIndex));
+      stGVL.eStateMachine = SM_RESET;
+      return;
+   }
+   else if(stGVL.eCurrentDirection == DIR_LONG)
    {
       if(stGVL.Candle[0].low < stGVL.LastFVGTop) // FVG reached
       {
+         stGVL.dtFVGReached_Time = stGVL.dtCurrentTime;
          stGVL.eStateMachine = SM_SEARCH_INVERSE_FVG;
       }
    }
@@ -11,6 +19,7 @@ void M_SM_WAIT_FVG_REACHED()
    {
       if(stGVL.Candle[0].high > stGVL.LastFVGBottom) // FVG reached
       {
+         stGVL.dtFVGReached_Time = stGVL.dtCurrentTime;
          stGVL.eStateMachine = SM_SEARCH_INVERSE_FVG;
       }
    }

@@ -4,7 +4,17 @@ void M_SM_WAIT_FVG_INVERSED()
    // Long
    if(stGVL.eCurrentDirection == DIR_LONG)
    {
-      if(stGVL.Candle[0].high <= stGVL.LastFVGTop) // FVG not inversed yet
+      double Debug1 = stGVL.LastFVGBottom;
+      double Debug2 = stGVL.Candle[0].low;
+      datetime Debug3 = stGVL.dtFVGReached_Time;
+      
+      if(FVGReachedIndex > nMaxCandlesFVGInverse && nMaxCandlesFVGInverse != 0)
+      {
+         M_LogWarning("Maximum candles to inverse FVG reached = ");
+         stGVL.eStateMachine = SM_RESET;
+         return;
+      }
+      else if(stGVL.Candle[1].close <= stGVL.LastFVGTop) // FVG not inversed yet
       {
          return;
       }
@@ -13,12 +23,7 @@ void M_SM_WAIT_FVG_INVERSED()
          stGVL.eStateMachine = SM_RESET;
          return;
       }
-      else if(FVGReachedIndex > nMaxCandlesFVGInverse && nMaxCandlesFVGInverse != 0)
-      {
-         M_LogWarning("Maximum candles to inverse FVG reached = ");
-         stGVL.eStateMachine = SM_RESET;
-         return;
-      }
+      
       else
       {
          // Enter trade
@@ -64,18 +69,18 @@ void M_SM_WAIT_FVG_INVERSED()
    // Short
    else if(stGVL.eCurrentDirection == DIR_SHORT)
    {
-      if(stGVL.Candle[0].low >= stGVL.LastFVGBottom) // FVG not inversed yet
+      if(FVGReachedIndex > nMaxCandlesFVGInverse && nMaxCandlesFVGInverse != 0)
+      {
+         M_LogWarning("Maximum candles to inverse FVG reached = ");
+         stGVL.eStateMachine = SM_RESET;
+         return;
+      }
+      else if(stGVL.Candle[1].close >= stGVL.LastFVGBottom) // FVG not inversed yet
       {
          return;
       }
       else if(!M_FiltersOK(true))
       {
-         stGVL.eStateMachine = SM_RESET;
-         return;
-      }
-      else if(FVGReachedIndex > nMaxCandlesFVGInverse && nMaxCandlesFVGInverse != 0)
-      {
-         M_LogWarning("Maximum candles to inverse FVG reached = ");
          stGVL.eStateMachine = SM_RESET;
          return;
       }

@@ -2,8 +2,18 @@ void M_SM_SEARCH_INVERSE_FVG()
 {
    // Search for the last FVG
    int NrCLDs = MathMin(nCandlesLookbackFVG, 97);
+   double tmpLow = 100000000;
+   double tmpHigh = 0;
    for(int i = 1; i <= NrCLDs; i++) // Bei 1 anfangen, da 0 noch nicht geschlossen is
    {
+      if(stGVL.Candle[i].high > tmpHigh)
+      {
+         tmpHigh = stGVL.Candle[i].high;
+      }
+      if(stGVL.Candle[i].low < tmpLow)
+      {
+         tmpLow = stGVL.Candle[i].low;
+      }
       // Direction Buy
       if(stGVL.Candle[i+1].open > stGVL.Candle[i+1].close && stGVL.eCurrentDirection == DIR_LONG) // middle candle is bearish
       {
@@ -13,14 +23,17 @@ void M_SM_SEARCH_INVERSE_FVG()
          // FVG is above FVG
          bool Condition2 = stGVL.Candle[i].high > stGVL.LastFVGTop;
          
-         if(Condition1 && Condition2)
+         // Check if the FVG is still valid and did not get taken out already buy a candle between now and FVG
+         bool Condition3 = stGVL.Candle[i].high >= tmpHigh;
+         
+         if(Condition1 && Condition2 && Condition3)
          { // fair value gap
             stGVL.LastFVGTop     = stGVL.Candle[i+2].low;
             stGVL.LastFVGBottom  = stGVL.Candle[i].high;
             stGVL.LastFVGIndex   = i + 1;
             
             datetime barTime = iTime(_Symbol, PERIOD_CURRENT, 0);
-            datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex);
+            datetime barTimeFVGStart = iTime(_Symbol, PERIOD_CURRENT, stGVL.LastFVGIndex);
             stGVL.Rect_ActFVG_Number = stGVL.Rect_ActFVG_Number + 1;
             M_CreateBox(stGVL.Rect_FVG, stGVL.Rect_ActFVG_Number, barTimeFVGStart, barTime, stGVL.LastFVGTop, stGVL.LastFVGBottom, clrAquamarine);
             
@@ -38,14 +51,17 @@ void M_SM_SEARCH_INVERSE_FVG()
          // FVG is below FVG
          bool Condition2 = stGVL.Candle[i].low < stGVL.LastFVGBottom;
          
-         if(Condition1 && Condition2)
+         // Check if the FVG is still valid and did not get taken out already buy a candle between now and FVG
+         bool Condition3 = stGVL.Candle[i].low <= tmpLow;
+         
+         if(Condition1 && Condition2 && Condition3)
          { // fair value gap
             stGVL.LastFVGTop     = stGVL.Candle[i].low;
             stGVL.LastFVGBottom  = stGVL.Candle[i+2].high;
             stGVL.LastFVGIndex   = i + 1;
             
             datetime barTime = iTime(_Symbol, PERIOD_CURRENT, 0);
-            datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex);
+            datetime barTimeFVGStart = iTime(_Symbol, PERIOD_CURRENT, stGVL.LastFVGIndex);
             stGVL.Rect_ActFVG_Number = stGVL.Rect_ActFVG_Number + 1;
             M_CreateBox(stGVL.Rect_FVG, stGVL.Rect_ActFVG_Number, barTimeFVGStart, barTime, stGVL.LastFVGTop, stGVL.LastFVGBottom, clrYellow);
             
