@@ -22,13 +22,13 @@ input double   nMaxDailyLoss = 0;            // Maximum daily loss in percent
 // Strategy parameters
 input string   Section_Strategy        = "";    // ---STRATEGY---
 input double   fRiskReward = 2.0;               // Risk reward ratio
-input int      nNumberOfCandlesLow = 10;        // Number of candles to look for low
-input int      nCandlesLookbackFVG = 10;        // Number of candles to look back for fair value gap
-input int      nMaxCandlesFVGInverse = 10;      // Maximum candles to inverse FVG
+input double   nMoveBeAtProfit = 0;             // Move break even at profit
 input int      nMaxCandlesToReachFVG = 30;      // Maximum candles to reach FVG
+input int      nCandlesLookbackFVG = 10;        // Number of candles to look back for IFVG
+input int      nMaxCandlesFVGInverse = 10;      // Maximum candles to inverse FVG
 input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search
-input bool     bRunnerPosition = false;       // Runner position (closing when EMAs cross)
-input int      nDistanceMoveRunnerSLTP1 = 0;  // Distance to move SL of runner to TP1
+input bool     bRunnerPosition = false;         // Runner position (closing when EMAs cross)
+input int      nDistanceMoveRunnerSLTP1 = 0;    // Distance to move SL of runner to TP1
 
 // Time filter parameters
 input string   Section_TimeFilter      = ""; // ---TIME FILTER---
@@ -83,8 +83,8 @@ int OnInit()
    M_CreateLabel("GMTTime",5,40);
    M_CreateLabel("ServerTime",5,80);
    
-   nMaxCandles = nNumberOfCandlesLow + 1;
-   nMaxCandles = MathMax(nCandlesLookbackFVG + 3,nMaxCandles); // 3 Becuase a FVG exists out of 3 candles
+   nMaxCandles = 4;
+   nMaxCandles = MathMax(nCandlesLookbackFVG + 3,nMaxCandles); // 3 Because a FVG exists out of 3 candles
    nMaxCandles = MathMax(nMaxCandlesFVGInverse + 1,nMaxCandles);
    nMaxCandles = MathMax(nMaxCandlesToReachFVG, nMaxCandles);
    nMaxCandles = MathMin(nMaxCandles, 100);

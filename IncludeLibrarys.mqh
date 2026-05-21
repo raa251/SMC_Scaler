@@ -24,6 +24,12 @@
 #include "Utilities/M_NewBar_HigherTF.mqh"
 #include "Utilities/M_Points2Price.mqh"
 #include "Utilities/M_NewDay.mqh"
+#include "Utilities/M_RecalculateTP.mqh"
+#include "Utilities/M_CloseRunner.mqh"
+#include "Utilities/M_CheckRunnerToTp1.mqh"
+#include "Utilities/M_AllSLToEntry.mqh"
+#include "Utilities/M_ModifyPositionSL.mqh"
+#include "Utilities/M_MoveBE.mqh"
 
 #include "Filters/M_NewsOK.mqh"
 #include "Filters/M_FiltersOK.mqh"

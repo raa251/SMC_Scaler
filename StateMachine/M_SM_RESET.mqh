@@ -10,6 +10,11 @@ void M_SM_RESET()
    stGVL.LastFVGBottom = 0;
    stGVL.LastFVGIndex = 0;
    stGVL.dtFVGReached_Time = 0;
+   stGVL.dtFVGCreated_Time = 0;
+   
+   stGVL.bTPChecked = false;
+   stGVL.bRunnerPosition_CheckClose = false;
+   stGVL.MovedBE = false;
    
    stGVL.eStateMachine = SM_WAIT_FOR_START;
 }

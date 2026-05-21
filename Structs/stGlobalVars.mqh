@@ -29,8 +29,10 @@ struct stGlobalVars
    bool bFilterActive;
    double DailyStartingBalance;
    
+   bool bTPChecked;
    bool MovedBE;
    bool bRunnerPosition_CheckClose;
+   double fDistanceMoveRunnerSLTP1_Price;
    
    datetime ServerTime;
    datetime GMTTime;
@@ -54,4 +56,5 @@ struct stGlobalVars
    double BigEMABuffer_CurrTF[];
    
    double fMinDiffEMA_Price;
+   
 };

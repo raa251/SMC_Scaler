@@ -41,6 +41,13 @@ void M_SM_WAIT_FVG_INVERSED()
          
          stGVL.StopLoss = stGVL.BodyStopLoss;
          
+         if(stGVL.StopLoss == 0)
+         {
+            M_LogError("Stoploss could not be calculated!");
+            stGVL.eStateMachine = SM_RESET;
+            return;
+         }
+         
          stGVL.Entry = CurrentEntryPrice;
          stGVL.TakeProfit = stGVL.Entry + (stGVL.Entry - stGVL.StopLoss) * fRiskReward;
          stGVL.nNumberOfPositions = 1;
@@ -101,6 +108,13 @@ void M_SM_WAIT_FVG_INVERSED()
          
          stGVL.StopLoss = stGVL.BodyStopLoss;
          
+         if(stGVL.StopLoss == 0)
+         {
+            M_LogError("Stoploss could not be calculated!");
+            stGVL.eStateMachine = SM_RESET;
+            return;
+         }
+         
          stGVL.Entry = CurrentEntryPrice;
          stGVL.TakeProfit = stGVL.Entry - (stGVL.StopLoss - stGVL.Entry) * fRiskReward;
          stGVL.nNumberOfPositions = 1;
@@ -117,7 +131,7 @@ void M_SM_WAIT_FVG_INVERSED()
          M_LogInfo("Short entered with Lot " + DoubleToString(stGVL.LotSize) + " Entry=" + DoubleToString(stGVL.Entry) + " Stoploss=" + DoubleToString(stGVL.StopLoss) + " Takeprofit=" + DoubleToString(stGVL.TakeProfit));
          if(bRunnerPosition)
          {
-            Trade.Buy(stGVL.LotSize, _Symbol, 0, stGVL.StopLoss, 0, "Sell Runner");
+            Trade.Sell(stGVL.LotSize, _Symbol, 0, stGVL.StopLoss, 0, "Sell Runner");
             M_LogInfo("Short entered with Lot " + DoubleToString(stGVL.LotSize) + " Entry=" + DoubleToString(stGVL.Entry) + " Stoploss=" + DoubleToString(stGVL.StopLoss) + " Takeprofit=0 -> runner position");
          }
          
