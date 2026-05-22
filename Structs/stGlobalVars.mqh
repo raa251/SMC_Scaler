@@ -63,4 +63,6 @@ struct stGlobalVars
    
    double fMinDiffEMA_Price;
    
+   E_DIRECTION eTrendStructure;
+   
 };

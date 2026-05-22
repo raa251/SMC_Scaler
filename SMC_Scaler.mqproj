@@ -317,6 +317,11 @@
       "path":"StateMachine\\M_SM_WAIT_HTF_FVG_EXIT.mqh",
       "compile":false,
       "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\M_StructureTrend.mqh",
+      "compile":false,
+      "relative_to_project":true
     }
   ]
 }

@@ -10,6 +10,8 @@ void M_NewBar_HigherTF()
       
       bool bCondition2 = M_EMABullish(true);
       
+      bool bCondition3 = stGVL.eTrendStructure == DIR_LONG || eTrendFilter != STRUCTURE;
+      
       if(!bCondition1)
       {
          return; // No FVG
@@ -17,6 +19,11 @@ void M_NewBar_HigherTF()
       else if(!bCondition2)
       {
          return; // EMA is not bullish
+      }
+      else if(!bCondition3)
+      {
+         M_LogWarning("Structure is not bearish");
+         return; // Structure is not bullish
       }
       else
       { // fair value gap
@@ -42,6 +49,8 @@ void M_NewBar_HigherTF()
       
       bool bCondition2 = M_EMABearish(true);
       
+      bool bCondition3 = stGVL.eTrendStructure == DIR_SHORT || eTrendFilter != STRUCTURE;
+      
       if(!bCondition1)
       {
          return; // No FVG
@@ -49,6 +58,11 @@ void M_NewBar_HigherTF()
       else if(!bCondition2)
       {
          return; // EMA is not bearish
+      }
+      else if(!bCondition3)
+      {
+         M_LogWarning("Structure is not bearish");
+         return; // Structure is not bearish
       }
       else
       { // fair value gap

@@ -33,6 +33,7 @@
 #include "Utilities/M_ModifyPositionSL.mqh"
 #include "Utilities/M_MoveBE.mqh"
 #include "Utilities/M_SearchSL.mqh"
+#include "Utilities/M_StructureTrend.mqh"
 
 #include "Filters/M_NewsOK.mqh"
 #include "Filters/M_FiltersOK.mqh"
