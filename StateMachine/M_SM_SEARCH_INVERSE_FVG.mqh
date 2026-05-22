@@ -21,7 +21,7 @@ void M_SM_SEARCH_INVERSE_FVG()
          bool Condition1 = stGVL.Candle[i+2].low > stGVL.Candle[i].high;
 
          // FVG is above FVG
-         bool Condition2 = stGVL.Candle[i].high > stGVL.LastFVGTop;
+         bool Condition2 = stGVL.Candle[i].high > stGVL.LastFVGTop_HTF;
          
          // Check if the FVG is still valid and did not get taken out already buy a candle between now and FVG
          bool Condition3 = stGVL.Candle[i].high >= tmpHigh;
@@ -49,7 +49,7 @@ void M_SM_SEARCH_INVERSE_FVG()
          bool Condition1 = stGVL.Candle[i+2].high < stGVL.Candle[i].low;
          
          // FVG is below FVG
-         bool Condition2 = stGVL.Candle[i].low < stGVL.LastFVGBottom;
+         bool Condition2 = stGVL.Candle[i].low < stGVL.LastFVGBottom_HTF;
          
          // Check if the FVG is still valid and did not get taken out already buy a candle between now and FVG
          bool Condition3 = stGVL.Candle[i].low <= tmpLow;
@@ -75,7 +75,15 @@ void M_SM_SEARCH_INVERSE_FVG()
       if(NrCLDs == i) // Last loop run through, no FVG found
       {
          M_LogWarning("No FVG to inverse found in last " + IntegerToString(NrCLDs) + " Candles!");
-         stGVL.eStateMachine = SM_RESET;
+         M_LogWarning("Wait until a IFVG is formed in HTF FVG");
+         if(bSearchFVGWithinHTF_FVG)
+         {
+            stGVL.eStateMachine = SM_WAIT_HTF_FVG_EXIT;
+         }
+         else
+         {
+            stGVL.eStateMachine = SM_RESET;
+         }
          break;
       }
    }

@@ -1,0 +1,6 @@
+enum E_TREND_FILTER
+{
+   NONE,
+   EMA,
+   STRUCTURE
+};

@@ -1,13 +1,9 @@
 void M_SM_WAIT_FVG_INVERSED()
 {
-   int FVGReachedIndex = iBarShift(_Symbol, PERIOD_CURRENT, stGVL.dtFVGReached_Time);
+   int FVGReachedIndex = iBarShift(_Symbol, PERIOD_CURRENT, stGVL.dtFVGReached_Time_HTF);
    // Long
    if(stGVL.eCurrentDirection == DIR_LONG)
-   {
-      double Debug1 = stGVL.LastFVGBottom;
-      double Debug2 = stGVL.Candle[0].low;
-      datetime Debug3 = stGVL.dtFVGReached_Time;
-      
+   {      
       if(FVGReachedIndex > nMaxCandlesFVGInverse && nMaxCandlesFVGInverse != 0)
       {
          M_LogWarning("Maximum candles to inverse FVG reached = ");
@@ -30,16 +26,8 @@ void M_SM_WAIT_FVG_INVERSED()
          MqlTick tick;
          SymbolInfoTick(_Symbol, tick);
          double CurrentEntryPrice = tick.ask;
-         stGVL.BodyStopLoss = 0; // Reset Stoploss before searching a new one
-         for(int i = 1; i <= FVGReachedIndex; i++) // Search for the Stoploss at the minimum body between now and liquidity cross
-         {
-            if(stGVL.Candle[i].close < stGVL.BodyStopLoss || stGVL.BodyStopLoss == 0)
-            {
-               stGVL.BodyStopLoss = stGVL.Candle[i].close;
-            }
-         }
-         
-         stGVL.StopLoss = stGVL.BodyStopLoss;
+
+         stGVL.StopLoss = M_SearchSL();
          
          if(stGVL.StopLoss == 0)
          {
@@ -97,16 +85,8 @@ void M_SM_WAIT_FVG_INVERSED()
          MqlTick tick;
          SymbolInfoTick(_Symbol, tick);
          double CurrentEntryPrice = tick.bid;
-         stGVL.BodyStopLoss = 0; // Reset Stoploss before searching a new one
-         for(int i = 1; i <= FVGReachedIndex; i++) // Search for the Stoploss at the minimum body between now and liquidity cross
-         {
-            if(stGVL.Candle[i].close > stGVL.BodyStopLoss || stGVL.BodyStopLoss == 0)
-            {
-               stGVL.BodyStopLoss = stGVL.Candle[i].close;
-            }
-         }
          
-         stGVL.StopLoss = stGVL.BodyStopLoss;
+         stGVL.StopLoss = M_SearchSL();
          
          if(stGVL.StopLoss == 0)
          {

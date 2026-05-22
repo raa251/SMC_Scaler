@@ -297,6 +297,26 @@
       "path":"Utilities\\M_MoveBE.mqh",
       "compile":false,
       "relative_to_project":true
+    },
+    {
+      "path":"Structs\\E_TREND_FILTER.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Structs\\E_SL_PLACEMENT.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\M_SearchSL.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"StateMachine\\M_SM_WAIT_HTF_FVG_EXIT.mqh",
+      "compile":false,
+      "relative_to_project":true
     }
   ]
 }

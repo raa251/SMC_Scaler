@@ -13,6 +13,8 @@
 #include "StateMachine/M_StateMachine.mqh"
 
 #include "Structs/stGlobalVars.mqh"
+#include "Structs/E_TREND_FILTER.mqh"
+#include "Structs/E_SL_PLACEMENT.mqh"
 
 #include "Utilities/Log/M_LogError.mqh"
 #include "Utilities/Log/M_LogInfo.mqh"
@@ -30,6 +32,7 @@
 #include "Utilities/M_AllSLToEntry.mqh"
 #include "Utilities/M_ModifyPositionSL.mqh"
 #include "Utilities/M_MoveBE.mqh"
+#include "Utilities/M_SearchSL.mqh"
 
 #include "Filters/M_NewsOK.mqh"
 #include "Filters/M_FiltersOK.mqh"

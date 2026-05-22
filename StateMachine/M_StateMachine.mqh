@@ -4,6 +4,7 @@
 #include "M_SM_WAIT_FVG_REACHED.mqh"
 #include "M_SM_SEARCH_INVERSE_FVG.mqh"
 #include "M_SM_WAIT_FVG_INVERSED.mqh"
+#include "M_SM_WAIT_HTF_FVG_EXIT.mqh"
 
 void M_StateMachine()
 {
@@ -19,6 +20,10 @@ void M_StateMachine()
          
       case SM_SEARCH_INVERSE_FVG:
          M_SM_SEARCH_INVERSE_FVG();
+         break;
+         
+      case SM_WAIT_HTF_FVG_EXIT:
+         M_SM_WAIT_HTF_FVG_EXIT();
          break;
          
       case SM_WAIT_FVG_INVERSED:

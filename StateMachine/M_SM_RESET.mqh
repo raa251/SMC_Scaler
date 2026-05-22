@@ -9,8 +9,12 @@ void M_SM_RESET()
    stGVL.LastFVGTop = 0;
    stGVL.LastFVGBottom = 0;
    stGVL.LastFVGIndex = 0;
-   stGVL.dtFVGReached_Time = 0;
-   stGVL.dtFVGCreated_Time = 0;
+   
+   stGVL.LastFVGTop_HTF = 0;
+   stGVL.LastFVGBottom_HTF = 0;
+   stGVL.LastFVGIndex_HTF = 0;
+   stGVL.dtFVGReached_Time_HTF = 0;
+   stGVL.dtFVGCreated_Time_HTF = 0;
    
    stGVL.bTPChecked = false;
    stGVL.bRunnerPosition_CheckClose = false;

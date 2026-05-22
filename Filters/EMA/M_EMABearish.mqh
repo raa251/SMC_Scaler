@@ -1,6 +1,6 @@
 bool M_EMABearish(bool bLog)
 {
-   if(!bEMAActive)
+   if(eTrendFilter != EMA)
    {
       return true;
    }

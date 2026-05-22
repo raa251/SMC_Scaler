@@ -1,6 +1,6 @@
 bool M_CalcCurrentEMA()
 {
-   if(bEMAActive)
+   if(eTrendFilter == EMA)
    {
       ResetLastError();
       if(CopyBuffer(stGVL.nSmallEMAHandle, 0, 0, nMaxCandles, stGVL.SmallEMABuffer) <= 0)

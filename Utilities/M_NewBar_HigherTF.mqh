@@ -20,19 +20,19 @@ void M_NewBar_HigherTF()
       }
       else
       { // fair value gap
-         stGVL.LastFVGTop     = stGVL.CandleHigherTF[1].low;
-         stGVL.LastFVGBottom  = stGVL.CandleHigherTF[3].high;
-         stGVL.LastFVGIndex   = 2;
+         stGVL.LastFVGTop_HTF     = stGVL.CandleHigherTF[1].low;
+         stGVL.LastFVGBottom_HTF  = stGVL.CandleHigherTF[3].high;
+         stGVL.LastFVGIndex_HTF   = 2;
          
          stGVL.eCurrentDirection = DIR_LONG;
          
-         stGVL.dtFVGCreated_Time = iTime(_Symbol, PERIOD_CURRENT, 0);
+         stGVL.dtFVGCreated_Time_HTF = iTime(_Symbol, PERIOD_CURRENT, 0);
          datetime barTime = iTime(_Symbol, eHigherTF, 0);
-         datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex);
-         stGVL.Rect_ActFVG_Number = stGVL.Rect_ActFVG_Number + 1;
-         M_CreateBox(stGVL.Rect_FVG, stGVL.Rect_ActFVG_Number, barTimeFVGStart, barTime, stGVL.LastFVGTop, stGVL.LastFVGBottom, clrYellow);
+         datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex_HTF);
+         stGVL.Rect_ActFVG_Number_HTF = stGVL.Rect_ActFVG_Number_HTF + 1;
+         M_CreateBox(stGVL.Rect_FVG_HTF, stGVL.Rect_ActFVG_Number_HTF, barTimeFVGStart, barTime, stGVL.LastFVGTop_HTF, stGVL.LastFVGBottom_HTF, clrYellow);
          
-         M_LogInfo("FVG for buy found, TOP=" + DoubleToString(stGVL.LastFVGTop) + " BOTTOM=" + DoubleToString(stGVL.LastFVGBottom));
+         M_LogInfo("FVG for buy found, TOP=" + DoubleToString(stGVL.LastFVGTop_HTF) + " BOTTOM=" + DoubleToString(stGVL.LastFVGBottom_HTF));
          stGVL.eStateMachine = SM_WAIT_FVG_REACHED;
       }
    }
@@ -52,19 +52,19 @@ void M_NewBar_HigherTF()
       }
       else
       { // fair value gap
-         stGVL.LastFVGTop     = stGVL.CandleHigherTF[3].low;
-         stGVL.LastFVGBottom  = stGVL.CandleHigherTF[1].high;
-         stGVL.LastFVGIndex   = 2;
+         stGVL.LastFVGTop_HTF     = stGVL.CandleHigherTF[3].low;
+         stGVL.LastFVGBottom_HTF  = stGVL.CandleHigherTF[1].high;
+         stGVL.LastFVGIndex_HTF   = 2;
          
          stGVL.eCurrentDirection = DIR_SHORT;
          
-         stGVL.dtFVGCreated_Time = iTime(_Symbol, PERIOD_CURRENT, 0);
+         stGVL.dtFVGCreated_Time_HTF = iTime(_Symbol, PERIOD_CURRENT, 0);
          datetime barTime = iTime(_Symbol, eHigherTF, 0);
-         datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex);
-         stGVL.Rect_ActFVG_Number = stGVL.Rect_ActFVG_Number + 1;
-         M_CreateBox(stGVL.Rect_FVG, stGVL.Rect_ActFVG_Number, barTimeFVGStart, barTime, stGVL.LastFVGTop, stGVL.LastFVGBottom, clrYellow);
+         datetime barTimeFVGStart = iTime(_Symbol, eHigherTF, stGVL.LastFVGIndex_HTF);
+         stGVL.Rect_ActFVG_Number_HTF = stGVL.Rect_ActFVG_Number_HTF + 1;
+         M_CreateBox(stGVL.Rect_FVG_HTF, stGVL.Rect_ActFVG_Number_HTF, barTimeFVGStart, barTime, stGVL.LastFVGTop_HTF, stGVL.LastFVGBottom_HTF, clrYellow);
          
-         M_LogInfo("FVG for sell found, TOP=" + DoubleToString(stGVL.LastFVGTop) + " BOTTOM=" + DoubleToString(stGVL.LastFVGBottom));
+         M_LogInfo("FVG for sell found, TOP=" + DoubleToString(stGVL.LastFVGTop_HTF) + " BOTTOM=" + DoubleToString(stGVL.LastFVGBottom_HTF));
          stGVL.eStateMachine = SM_WAIT_FVG_REACHED;
       }
    }

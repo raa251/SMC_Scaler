@@ -1,6 +1,6 @@
 bool M_EMA_INIT()
 {
-   if(bEMAActive)
+   if(eTrendFilter == EMA)
    {
       stGVL.nSmallEMAHandle = iMA(_Symbol, eEMATimeframe, nSmallEMALength, 0, MODE_EMA, PRICE_CLOSE);
       stGVL.nBigEMAHandle = iMA(_Symbol, eEMATimeframe, nBigEMALength, 0, MODE_EMA, PRICE_CLOSE);

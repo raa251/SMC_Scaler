@@ -29,6 +29,9 @@ input int      nMaxCandlesFVGInverse = 10;      // Maximum candles to inverse FV
 input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search
 input bool     bRunnerPosition = false;         // Runner position (closing when EMAs cross)
 input int      nDistanceMoveRunnerSLTP1 = 0;    // Distance to move SL of runner to TP1
+input E_TREND_FILTER eTrendFilter = NONE;       // Trend filter mode
+input E_SL_PLACEMENT eSLPlacement = LAST_STRUCTURE_BODY; // Stoploss placement
+input bool     bSearchFVGWithinHTF_FVG = true;  // Search FVG within HTF FVG
 
 // Time filter parameters
 input string   Section_TimeFilter      = ""; // ---TIME FILTER---
@@ -39,8 +42,7 @@ input int      nEndTime2 = -1;               // End time
 
 // EMA filter parameters
 input string   Section_EMAFilter     = ""; // ---EMA FILTER---
-input bool bEMAActive = false;                        // EMA filter active
-input ENUM_TIMEFRAMES eEMATimeframe = PERIOD_CURRENT; // EMA timeframe
+input ENUM_TIMEFRAMES eEMATimeframe = PERIOD_CURRENT; // EMA timeframe(Filter)
 input int nSmallEMALength = 20;                       // Small EMA length
 input int nBigEMALength = 50;                         // Big EMA length
 input int nMinDiffEMA = 0;                            // Minimum difference between small and big EMA

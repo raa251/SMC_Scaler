@@ -42,8 +42,14 @@ struct stGlobalVars
    double LastFVGTop;
    double LastFVGBottom;
    int LastFVGIndex;
-   datetime dtFVGReached_Time;
-   datetime dtFVGCreated_Time;
+   
+   string Rect_FVG_HTF;
+   int Rect_ActFVG_Number_HTF;
+   double LastFVGTop_HTF;
+   double LastFVGBottom_HTF;
+   int LastFVGIndex_HTF;
+   datetime dtFVGReached_Time_HTF;
+   datetime dtFVGCreated_Time_HTF;
    
    int nSmallEMAHandle;
    int nBigEMAHandle;

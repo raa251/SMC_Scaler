@@ -1,6 +1,6 @@
 bool M_EMABullish(bool bLog)
 {
-   if(!bEMAActive)
+   if(eTrendFilter != EMA)
    {
       return true;
    }
