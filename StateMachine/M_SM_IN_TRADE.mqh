@@ -25,6 +25,10 @@ void M_SM_IN_TRADE()
                stGVL.bRunnerPosition_CheckClose = true;
             }
          }
+         else if(nMoveBeAtProfit == 0 && PositionsTotal() == 1 && bRunnerPosition) // When Move BE = 0 then start looking to close when other trade hit TP
+         {
+            stGVL.bRunnerPosition_CheckClose = true;
+         }
       }
       else if(stGVL.eCurrentDirection == DIR_SHORT)
       {
@@ -42,6 +46,10 @@ void M_SM_IN_TRADE()
             {
                stGVL.bRunnerPosition_CheckClose = true;
             }
+         }
+         else if(nMoveBeAtProfit == 0 && PositionsTotal() == 1 && bRunnerPosition) // When Move BE = 0 then start looking to close when other trade hit TP
+         {
+            stGVL.bRunnerPosition_CheckClose = true;
          }
       }
    }
