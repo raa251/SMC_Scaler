@@ -62,6 +62,10 @@ struct stGlobalVars
    double BigEMABuffer_CurrTF[];
    
    double fMinDiffEMA_Price;
+   double fMinFVGSize_Price;
+   double fMaxFVGSize_Price;
+   double fMinIFVGSize_Price;
+   double fMaxIFVGSize_Price;
    
    E_DIRECTION eTrendStructure;
    

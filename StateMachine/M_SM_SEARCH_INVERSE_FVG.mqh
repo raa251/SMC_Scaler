@@ -26,7 +26,13 @@ void M_SM_SEARCH_INVERSE_FVG()
          // Check if the FVG is still valid and did not get taken out already buy a candle between now and FVG
          bool Condition3 = stGVL.Candle[i].high >= tmpHigh;
          
-         if(Condition1 && Condition2 && Condition3)
+         // Check if the FVG is big enough
+         bool Condition4 = stGVL.Candle[i+2].low - stGVL.Candle[i].high >= stGVL.fMinIFVGSize_Price || stGVL.fMinIFVGSize_Price == 0;
+         
+         // Check if the FVG is not too big
+         bool Condition5 = stGVL.Candle[i+2].low - stGVL.Candle[i].high <= stGVL.fMaxIFVGSize_Price || stGVL.fMaxIFVGSize_Price == 0;
+         
+         if(Condition1 && Condition2 && Condition3 && Condition4 && Condition5)
          { // fair value gap
             stGVL.LastFVGTop     = stGVL.Candle[i+2].low;
             stGVL.LastFVGBottom  = stGVL.Candle[i].high;
@@ -54,7 +60,13 @@ void M_SM_SEARCH_INVERSE_FVG()
          // Check if the FVG is still valid and did not get taken out already buy a candle between now and FVG
          bool Condition3 = stGVL.Candle[i].low <= tmpLow;
          
-         if(Condition1 && Condition2 && Condition3)
+         // Check if the FVG is big enough
+         bool Condition4 = stGVL.Candle[i].low - stGVL.Candle[i+2].high >= stGVL.fMinIFVGSize_Price || stGVL.fMinIFVGSize_Price == 0;
+         
+         // Check if the FVG is not too big
+         bool Condition5 = stGVL.Candle[i].low - stGVL.Candle[i+2].high <= stGVL.fMaxIFVGSize_Price || stGVL.fMaxIFVGSize_Price == 0;
+         
+         if(Condition1 && Condition2 && Condition3 && Condition4 && Condition5)
          { // fair value gap
             stGVL.LastFVGTop     = stGVL.Candle[i].low;
             stGVL.LastFVGBottom  = stGVL.Candle[i+2].high;

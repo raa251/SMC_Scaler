@@ -32,6 +32,10 @@ input int      nDistanceMoveRunnerSLTP1 = 0;    // Distance to move SL of runner
 input E_TREND_FILTER eTrendFilter = NONE;       // Trend filter mode
 input E_SL_PLACEMENT eSLPlacement = LAST_STRUCTURE_BODY; // Stoploss placement
 input bool     bSearchFVGWithinHTF_FVG = true;  // Search FVG within HTF FVG
+input int      nMinFVGSize = 0;                // Minimum FVG size(HTF)
+input int      nMaxFVGSize = 0;                // Maximum FVG size(HTF)
+input int      nMinIFVGSize = 0;               // Minimum IFVG size(CTF)
+input int      nMaxIFVGSize = 0;               // Maximum IFVG size(CTF)
 
 // Time filter parameters
 input string   Section_TimeFilter      = ""; // ---TIME FILTER---

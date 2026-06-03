@@ -6,11 +6,15 @@ void M_NewBar_HigherTF()
    }
    if(stGVL.CandleHigherTF[2].open < stGVL.CandleHigherTF[2].close) // middle candle is bullish
    {
-      bool bCondition1 = stGVL.CandleHigherTF[3].high < stGVL.CandleHigherTF[1].low;
+      bool bCondition1 = stGVL.CandleHigherTF[3].high <= stGVL.CandleHigherTF[1].low;
       
       bool bCondition2 = M_EMABullish(true);
       
       bool bCondition3 = stGVL.eTrendStructure == DIR_LONG || eTrendFilter != STRUCTURE;
+      
+      bool bCondition4 = stGVL.CandleHigherTF[1].low - stGVL.CandleHigherTF[3].high >= stGVL.fMinFVGSize_Price || stGVL.fMinFVGSize_Price == 0;
+      
+      bool bCondition5 = stGVL.CandleHigherTF[1].low - stGVL.CandleHigherTF[3].high <= stGVL.fMaxFVGSize_Price || stGVL.fMaxFVGSize_Price == 0;
       
       if(!bCondition1)
       {
@@ -24,6 +28,14 @@ void M_NewBar_HigherTF()
       {
          M_LogWarning("Structure is not bearish");
          return; // Structure is not bullish
+      }
+      else if(!bCondition4)
+      {
+         return; // FVG is to small
+      }
+      else if(!bCondition5)
+      {
+         return; // FVG is to big
       }
       else
       { // fair value gap
@@ -51,6 +63,10 @@ void M_NewBar_HigherTF()
       
       bool bCondition3 = stGVL.eTrendStructure == DIR_SHORT || eTrendFilter != STRUCTURE;
       
+      bool bCondition4 = stGVL.CandleHigherTF[3].low - stGVL.CandleHigherTF[1].high >= stGVL.fMinFVGSize_Price || stGVL.fMinFVGSize_Price == 0;
+      
+      bool bCondition5 = stGVL.CandleHigherTF[3].low - stGVL.CandleHigherTF[1].high <= stGVL.fMaxFVGSize_Price || stGVL.fMaxFVGSize_Price == 0;
+      
       if(!bCondition1)
       {
          return; // No FVG
@@ -63,6 +79,14 @@ void M_NewBar_HigherTF()
       {
          M_LogWarning("Structure is not bearish");
          return; // Structure is not bearish
+      }
+      else if(!bCondition4)
+      {
+         return; // FVG is to small
+      }
+      else if(!bCondition5)
+      {
+         return; // FVG is to big
       }
       else
       { // fair value gap
