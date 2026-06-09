@@ -30,6 +30,12 @@ bool M_FiltersOK(bool bLog)
       return false;
    }
    
+   if(!M_DayOK(bLog))
+   {
+      M_ChangeLabelText("FilterLabel", "Trading is disaled on this day");
+      return false;
+   }
+   
    M_ChangeLabelText("FilterLabel", "Looking for trades");
    
    return true;

@@ -9,6 +9,7 @@
 #include "Filters/EMA/M_EMABullish.mqh"
 #include "Filters/EMA/M_EMACloseBuy.mqh"
 #include "Filters/EMA/M_EMACloseSell.mqh"
+#include "Filters/M_DayOK.mqh"
 
 #include "StateMachine/M_StateMachine.mqh"
 

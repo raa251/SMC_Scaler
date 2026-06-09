@@ -44,6 +44,14 @@ input int      nEndTime1 = 20;               // End time
 input int      nStartTime2 = -1;             // Start time
 input int      nEndTime2 = -1;               // End time
 
+// Day filter parameters
+input string   Section_DayFilter       = ""; // ---DAY FILTER---
+input bool     bMonday     = true;           // Monday
+input bool     bTuesday    = true;           // Tuesday
+input bool     bWednesday  = true;           // Wednesday
+input bool     bThursday   = true;           // Thursday
+input bool     bFriday     = true;           // Friday
+
 // EMA filter parameters
 input string   Section_EMAFilter     = ""; // ---EMA FILTER---
 input ENUM_TIMEFRAMES eEMATimeframe = PERIOD_CURRENT; // EMA timeframe(Filter)
