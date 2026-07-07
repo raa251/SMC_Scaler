@@ -24,6 +24,7 @@ input string   Section_Strategy        = "";    // ---STRATEGY---
 input double   fRiskReward = 2.0;               // Risk reward ratio
 input double   nMoveBeAtProfit = 0;             // Move break even at profit
 input int      nMaxCandlesToReachFVG = 30;      // Maximum candles to reach FVG
+input double   fMaxDipIntoFVG = 0;               // Maximum dip into FVG in percent
 input int      nCandlesLookbackFVG = 10;        // Number of candles to look back for IFVG
 input int      nMaxCandlesFVGInverse = 10;      // Maximum candles to inverse FVG
 input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search

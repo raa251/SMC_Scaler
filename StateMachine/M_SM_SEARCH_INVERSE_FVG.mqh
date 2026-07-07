@@ -90,6 +90,7 @@ void M_SM_SEARCH_INVERSE_FVG()
          M_LogWarning("Wait until a IFVG is formed in HTF FVG");
          if(bSearchFVGWithinHTF_FVG)
          {
+            stGVL.bWaitForNewCurrBar = true; // Otherwise we would directly jump to reset on the next tick
             stGVL.eStateMachine = SM_WAIT_HTF_FVG_EXIT;
          }
          else

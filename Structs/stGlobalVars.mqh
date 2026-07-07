@@ -69,4 +69,5 @@ struct stGlobalVars
    
    E_DIRECTION eTrendStructure;
    
+   bool bWaitForNewCurrBar;
 };

@@ -2,7 +2,7 @@
   "platform"    :"mt5",
   "program_type":"expert",
   "copyright"   :"raphix251",
-  "version"     :"03.01",
+  "version"     :"04.01",
   "cpu_architecture" :"0",
   "optimize"    :"1",
   "fpzerocheck" :"1",
@@ -325,6 +325,11 @@
     },
     {
       "path":"Filters\\M_DayOK.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Filters\\M_DipOK.mqh",
       "compile":false,
       "relative_to_project":true
     }

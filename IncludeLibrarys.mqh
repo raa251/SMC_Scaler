@@ -10,6 +10,7 @@
 #include "Filters/EMA/M_EMACloseBuy.mqh"
 #include "Filters/EMA/M_EMACloseSell.mqh"
 #include "Filters/M_DayOK.mqh"
+#include "Filters/M_DipOK.mqh"
 
 #include "StateMachine/M_StateMachine.mqh"
 
