@@ -6,9 +6,13 @@ double M_SearchSL()
    
    if(stGVL.eCurrentDirection == DIR_LONG)
    {
-      if(eSLPlacement == FVG)
+      if(eSLPlacement == END_OF_FVG)
       {
          tmpSL = stGVL.LastFVGBottom_HTF;
+      }
+      else if(eSLPlacement == MIDDLE_OF_FVG)
+      {
+         tmpSL = stGVL.LastFVGTop_HTF - ((stGVL.LastFVGTop_HTF - stGVL.LastFVGBottom_HTF) / 2);
       }
       else
       {
@@ -32,9 +36,13 @@ double M_SearchSL()
    }
    else
    {
-      if(eSLPlacement == FVG)
+      if(eSLPlacement == END_OF_FVG)
       {
          tmpSL = stGVL.LastFVGTop_HTF;
+      }
+      else if(eSLPlacement == MIDDLE_OF_FVG)
+      {
+         tmpSL = stGVL.LastFVGBottom_HTF + ((stGVL.LastFVGTop_HTF - stGVL.LastFVGBottom_HTF) / 2);
       }
       else
       {
