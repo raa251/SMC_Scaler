@@ -12,7 +12,7 @@ void M_SM_IN_TRADE()
       {
          if(stGVL.bRunnerPosition_CheckClose)
          {
-            M_CloseRunner(M_EMACloseBuy());
+            M_CloseRunner(M_CheckCloseRunner());
             
             M_CheckRunnerToTP1();
          }
@@ -34,7 +34,7 @@ void M_SM_IN_TRADE()
       {
          if(stGVL.bRunnerPosition_CheckClose)
          {
-            M_CloseRunner(M_EMACloseSell());
+            M_CloseRunner(M_CheckCloseRunner());
             
             M_CheckRunnerToTP1();
          }

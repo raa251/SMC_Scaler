@@ -3,6 +3,10 @@
 #include <Trade\AccountInfo.mqh>
 #include <Trade\SymbolInfo.mqh>
 
+#include "Structs/stGlobalVars.mqh"
+#include "Structs/E_TREND_FILTER.mqh"
+#include "Structs/E_SL_PLACEMENT.mqh"
+
 #include "Filters/EMA/M_CalcCurrentEMA.mqh"
 #include "Filters/EMA/M_EMA_INIT.mqh"
 #include "Filters/EMA/M_EMABearish.mqh"
@@ -11,12 +15,9 @@
 #include "Filters/EMA/M_EMACloseSell.mqh"
 #include "Filters/M_DayOK.mqh"
 #include "Filters/M_DipOK.mqh"
+#include "Filters/M_TrendOK.mqh"
 
 #include "StateMachine/M_StateMachine.mqh"
-
-#include "Structs/stGlobalVars.mqh"
-#include "Structs/E_TREND_FILTER.mqh"
-#include "Structs/E_SL_PLACEMENT.mqh"
 
 #include "Utilities/Log/M_LogError.mqh"
 #include "Utilities/Log/M_LogInfo.mqh"
@@ -35,7 +36,11 @@
 #include "Utilities/M_ModifyPositionSL.mqh"
 #include "Utilities/M_MoveBE.mqh"
 #include "Utilities/M_SearchSL.mqh"
-#include "Utilities/M_StructureTrend.mqh"
+#include "Utilities/Structure/M_StructureTrendHTF.mqh"
+#include "Utilities/Structure/M_StructureTrendCTF.mqh"
+#include "Utilities/Structure/M_SearchNewHigh.mqh"
+#include "Utilities/Structure/M_SearchNewLow.mqh"
+#include "Utilities/M_CheckCloseRunner.mqh"
 
 #include "Filters/M_NewsOK.mqh"
 #include "Filters/M_FiltersOK.mqh"

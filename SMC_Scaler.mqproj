@@ -2,7 +2,7 @@
   "platform"    :"mt5",
   "program_type":"expert",
   "copyright"   :"raphix251",
-  "version"     :"04.01",
+  "version"     :"05.01",
   "cpu_architecture" :"0",
   "optimize"    :"1",
   "fpzerocheck" :"1",
@@ -319,17 +319,42 @@
       "relative_to_project":true
     },
     {
-      "path":"Utilities\\M_StructureTrend.mqh",
-      "compile":false,
-      "relative_to_project":true
-    },
-    {
       "path":"Filters\\M_DayOK.mqh",
       "compile":false,
       "relative_to_project":true
     },
     {
       "path":"Filters\\M_DipOK.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Filters\\M_TrendOK.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\Structure\\M_SearchNewHigh.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\Structure\\M_SearchNewLow.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\Structure\\M_StructureTrendCTF.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\Structure\\M_StructureTrendHTF.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\M_CheckCloseRunner.mqh",
       "compile":false,
       "relative_to_project":true
     }

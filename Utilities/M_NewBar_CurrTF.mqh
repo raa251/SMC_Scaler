@@ -7,6 +7,8 @@ void M_NewBar_CurrTF()
    
    stGVL.bWaitForNewCurrBar = false;
    
+   M_StructureTrendCTF();
+   
    M_CalcCurrentEMA();
    
    if(stGVL.dtTimeCurrent_HigherTF != stGVL.dtTimeLast_HigherTF)

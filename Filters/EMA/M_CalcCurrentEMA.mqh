@@ -17,7 +17,7 @@ bool M_CalcCurrentEMA()
       }
    }
    
-   if(bRunnerPosition)
+   if(bRunnerPosition && eRunnerClose == EMA)
    {
       ResetLastError();
       if(CopyBuffer(stGVL.nSmallEMAHandle_CurrTF, 0, 0, nMaxCandles, stGVL.SmallEMABuffer_CurrTF) <= 0)

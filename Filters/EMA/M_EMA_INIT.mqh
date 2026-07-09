@@ -14,7 +14,7 @@ bool M_EMA_INIT()
       }
    }
    
-   if(bRunnerPosition)
+   if(bRunnerPosition && eRunnerClose == EMA)
    {
       stGVL.nSmallEMAHandle_CurrTF = iMA(_Symbol, PERIOD_CURRENT, nSmallEMALength, 0, MODE_EMA, PRICE_CLOSE);
       stGVL.nBigEMAHandle_CurrTF = iMA(_Symbol, PERIOD_CURRENT, nBigEMALength, 0, MODE_EMA, PRICE_CLOSE);

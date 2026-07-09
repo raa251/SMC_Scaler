@@ -28,7 +28,8 @@ input double   fMaxDipIntoFVG = 0;               // Maximum dip into FVG in perc
 input int      nCandlesLookbackFVG = 10;        // Number of candles to look back for IFVG
 input int      nMaxCandlesFVGInverse = 10;      // Maximum candles to inverse FVG
 input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search
-input bool     bRunnerPosition = false;         // Runner position (closing when EMAs cross)
+input bool     bRunnerPosition = false;         // Runner position
+input E_TREND_FILTER eRunnerClose = EMA;        // Runner position  close mode
 input int      nDistanceMoveRunnerSLTP1 = 0;    // Distance to move SL of runner to TP1
 input E_TREND_FILTER eTrendFilter = NONE;       // Trend filter mode
 input E_SL_PLACEMENT eSLPlacement = LAST_STRUCTURE_BODY; // Stoploss placement
@@ -37,6 +38,11 @@ input int      nMinFVGSize = 0;                // Minimum FVG size(HTF)
 input int      nMaxFVGSize = 0;                // Maximum FVG size(HTF)
 input int      nMinIFVGSize = 0;               // Minimum IFVG size(CTF)
 input int      nMaxIFVGSize = 0;               // Maximum IFVG size(CTF)
+
+// Structure parameters
+input string   Section_Structure             = ""; // ---STRUCTURE FILTER---
+input int      nFreeCandlesForExtrema_Right  = 2;  // Free candles on right side for new extrema
+input int      nFreeCandlesForExtrema_Left   = 2;  // Free candles on left side for new extrema
 
 // Time filter parameters
 input string   Section_TimeFilter      = ""; // ---TIME FILTER---
@@ -102,9 +108,18 @@ int OnInit()
    nMaxCandles = MathMax(nCandlesLookbackFVG + 3,nMaxCandles); // 3 Because a FVG exists out of 3 candles
    nMaxCandles = MathMax(nMaxCandlesFVGInverse + 1,nMaxCandles);
    nMaxCandles = MathMax(nMaxCandlesToReachFVG, nMaxCandles);
+   nMaxCandles = MathMax(nFreeCandlesForExtrema_Left + 2 + nFreeCandlesForExtrema_Right + 1, nMaxCandles);
    nMaxCandles = MathMin(nMaxCandles, 100);
    
    nMaxCandlesHigherTF = 3 + 1; // 3 Candles are needed for FVG + 1 because the first one is not closed yet
+   nMaxCandlesHigherTF = MathMax(nFreeCandlesForExtrema_Left + 2 + nFreeCandlesForExtrema_Right + 1, nMaxCandlesHigherTF);
+   
+   if(bRunnerPosition && eRunnerClose == NONE)
+   {
+      Alert("Runner close mode NONE is not allowed");
+      M_LogError("Runner close mode NONE is not allowed");
+      return(INIT_PARAMETERS_INCORRECT);
+   }
    
    return(INIT_SUCCEEDED);
 }

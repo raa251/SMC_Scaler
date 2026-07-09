@@ -1,5 +1,7 @@
 void M_NewBar_HigherTF()
 {
+   M_StructureTrendHTF();
+   
    if(stGVL.eStateMachine != SM_WAIT_FOR_START)
    {
       return;
@@ -8,13 +10,11 @@ void M_NewBar_HigherTF()
    {
       bool bCondition1 = stGVL.CandleHigherTF[3].high <= stGVL.CandleHigherTF[1].low;
       
-      bool bCondition2 = M_EMABullish(true);
+      bool bCondition2 = M_TrendOK(DIR_LONG);
       
-      bool bCondition3 = stGVL.eTrendStructure == DIR_LONG || eTrendFilter != STRUCTURE;
+      bool bCondition3 = stGVL.CandleHigherTF[1].low - stGVL.CandleHigherTF[3].high >= stGVL.fMinFVGSize_Price || stGVL.fMinFVGSize_Price == 0;
       
-      bool bCondition4 = stGVL.CandleHigherTF[1].low - stGVL.CandleHigherTF[3].high >= stGVL.fMinFVGSize_Price || stGVL.fMinFVGSize_Price == 0;
-      
-      bool bCondition5 = stGVL.CandleHigherTF[1].low - stGVL.CandleHigherTF[3].high <= stGVL.fMaxFVGSize_Price || stGVL.fMaxFVGSize_Price == 0;
+      bool bCondition4 = stGVL.CandleHigherTF[1].low - stGVL.CandleHigherTF[3].high <= stGVL.fMaxFVGSize_Price || stGVL.fMaxFVGSize_Price == 0;
       
       if(!bCondition1)
       {
@@ -22,18 +22,13 @@ void M_NewBar_HigherTF()
       }
       else if(!bCondition2)
       {
-         return; // EMA is not bullish
+         return; // Structure is not bullish
       }
       else if(!bCondition3)
       {
-         M_LogWarning("Structure is not bearish");
-         return; // Structure is not bullish
-      }
-      else if(!bCondition4)
-      {
          return; // FVG is to small
       }
-      else if(!bCondition5)
+      else if(!bCondition4)
       {
          return; // FVG is to big
       }
@@ -59,13 +54,11 @@ void M_NewBar_HigherTF()
    {
       bool bCondition1 = stGVL.CandleHigherTF[1].high < stGVL.CandleHigherTF[3].low;
       
-      bool bCondition2 = M_EMABearish(true);
+      bool bCondition2 = M_TrendOK(DIR_SHORT);
       
-      bool bCondition3 = stGVL.eTrendStructure == DIR_SHORT || eTrendFilter != STRUCTURE;
+      bool bCondition3 = stGVL.CandleHigherTF[3].low - stGVL.CandleHigherTF[1].high >= stGVL.fMinFVGSize_Price || stGVL.fMinFVGSize_Price == 0;
       
-      bool bCondition4 = stGVL.CandleHigherTF[3].low - stGVL.CandleHigherTF[1].high >= stGVL.fMinFVGSize_Price || stGVL.fMinFVGSize_Price == 0;
-      
-      bool bCondition5 = stGVL.CandleHigherTF[3].low - stGVL.CandleHigherTF[1].high <= stGVL.fMaxFVGSize_Price || stGVL.fMaxFVGSize_Price == 0;
+      bool bCondition4 = stGVL.CandleHigherTF[3].low - stGVL.CandleHigherTF[1].high <= stGVL.fMaxFVGSize_Price || stGVL.fMaxFVGSize_Price == 0;
       
       if(!bCondition1)
       {
@@ -73,18 +66,13 @@ void M_NewBar_HigherTF()
       }
       else if(!bCondition2)
       {
-         return; // EMA is not bearish
+         return; // Structure is not bearish
       }
       else if(!bCondition3)
       {
-         M_LogWarning("Structure is not bearish");
-         return; // Structure is not bearish
-      }
-      else if(!bCondition4)
-      {
          return; // FVG is to small
       }
-      else if(!bCondition5)
+      else if(!bCondition4)
       {
          return; // FVG is to big
       }

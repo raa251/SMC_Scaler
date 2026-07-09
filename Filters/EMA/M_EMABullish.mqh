@@ -1,10 +1,5 @@
 bool M_EMABullish(bool bLog)
-{
-   if(eTrendFilter != EMA)
-   {
-      return true;
-   }
-   
+{   
    if(stGVL.SmallEMABuffer[1] > stGVL.BigEMABuffer[1] + stGVL.fMinDiffEMA_Price)
    {
       return true;

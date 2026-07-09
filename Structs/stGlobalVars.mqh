@@ -67,7 +67,18 @@ struct stGlobalVars
    double fMinIFVGSize_Price;
    double fMaxIFVGSize_Price;
    
-   E_DIRECTION eTrendStructure;
+   // Trend Structure
+   E_DIRECTION eTrendStructure_HTF;
+   double fLastHigh_HTF;
+   int nLastHighIndex_HTF;
+   double fLastLow_HTF;
+   int nLastLowIndex_HTF;
+   
+   E_DIRECTION eTrendStructure_CTF;
+   double fLastHigh_CTF;
+   int nLastHighIndex_CTF;
+   double fLastLow_CTF;
+   int nLastLowIndex_CTF;
    
    bool bWaitForNewCurrBar;
 };

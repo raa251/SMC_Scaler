@@ -13,6 +13,7 @@ void M_SM_WAIT_FVG_INVERSED()
       }
       else if(!M_DipOK(FVGReachedIndex))
       {
+         stGVL.eStateMachine = SM_RESET;
          return;
       }
       else if(stGVL.Candle[1].close <= stGVL.LastFVGTop) // FVG not inversed yet
@@ -77,6 +78,7 @@ void M_SM_WAIT_FVG_INVERSED()
       }
       else if(!M_DipOK(FVGReachedIndex))
       {
+         stGVL.eStateMachine = SM_RESET;
          return;
       }
       else if(stGVL.Candle[1].close >= stGVL.LastFVGBottom) // FVG not inversed yet
