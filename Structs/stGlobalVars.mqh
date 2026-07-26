@@ -66,6 +66,7 @@ struct stGlobalVars
    double fMaxFVGSize_Price;
    double fMinIFVGSize_Price;
    double fMaxIFVGSize_Price;
+   double fMaxDistanceFVGInverse_Price;
    
    // Trend Structure
    E_DIRECTION eTrendStructure_HTF;

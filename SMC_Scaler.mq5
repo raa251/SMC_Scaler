@@ -27,6 +27,7 @@ input int      nMaxCandlesToReachFVG = 30;      // Maximum candles to reach FVG
 input double   fMaxDipIntoFVG = 0;               // Maximum dip into FVG in percent
 input int      nCandlesLookbackFVG = 10;        // Number of candles to look back for IFVG
 input int      nMaxCandlesFVGInverse = 10;      // Maximum candles to inverse FVG
+input int      nMaxDistanceFVGInverse = 0;      // Maximum distance to inverse FVG
 input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search
 input bool     bRunnerPosition = false;         // Runner position
 input E_TREND_FILTER eRunnerClose = EMA;        // Runner position  close mode

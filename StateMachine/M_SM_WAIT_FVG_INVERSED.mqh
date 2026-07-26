@@ -7,12 +7,18 @@ void M_SM_WAIT_FVG_INVERSED()
    {        
       if(FVGReachedIndex > nMaxCandlesFVGInverse && nMaxCandlesFVGInverse != 0)
       {
-         M_LogWarning("Maximum candles to inverse FVG reached = ");
+         M_LogWarning("Maximum candles to inverse FVG reached");
          stGVL.eStateMachine = SM_RESET;
          return;
       }
       else if(!M_DipOK(FVGReachedIndex))
       {
+         stGVL.eStateMachine = SM_RESET;
+         return;
+      }
+      else if(stGVL.Candle[1].close < stGVL.LastFVGBottom - stGVL.fMaxDistanceFVGInverse_Price)
+      {
+         M_LogWarning("Price is too far away from FVG to inverse");
          stGVL.eStateMachine = SM_RESET;
          return;
       }
@@ -78,6 +84,12 @@ void M_SM_WAIT_FVG_INVERSED()
       }
       else if(!M_DipOK(FVGReachedIndex))
       {
+         stGVL.eStateMachine = SM_RESET;
+         return;
+      }
+      else if(stGVL.Candle[1].close > stGVL.LastFVGTop + stGVL.fMaxDistanceFVGInverse_Price)
+      {
+         M_LogWarning("Price is too far away from FVG to inverse");
          stGVL.eStateMachine = SM_RESET;
          return;
       }

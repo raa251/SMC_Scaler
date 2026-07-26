@@ -2,7 +2,7 @@
   "platform"    :"mt5",
   "program_type":"expert",
   "copyright"   :"raphix251",
-  "version"     :"05.01",
+  "version"     :"06.01",
   "cpu_architecture" :"0",
   "optimize"    :"1",
   "fpzerocheck" :"1",
