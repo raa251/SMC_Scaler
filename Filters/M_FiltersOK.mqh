@@ -5,7 +5,13 @@ bool M_FiltersOK(bool bLog)
       M_ChangeLabelText("FilterLabel", "Out of session");
       return false;
    }
-   
+
+   if(!M_SpreadOK(bLog))
+   {
+      M_ChangeLabelText("FilterLabel", "Spread too high");
+      return false;
+   }
+
    if(!M_NewsOK(bLog))
    {
       M_ChangeLabelText("FilterLabel", "News active");

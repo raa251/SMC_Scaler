@@ -13,7 +13,7 @@ bool M_CheckRunnerToTP1()
                
          if(PositionSelectByTicket(ticket))
          {
-            if(PositionGetString(POSITION_SYMBOL) == _Symbol)
+            if(PositionGetString(POSITION_SYMBOL) == _Symbol && PositionGetInteger(POSITION_MAGIC) == nMagicNumber)
             {
                if(PositionGetDouble(POSITION_TP) == 0 && PositionGetDouble(POSITION_SL) != stGVL.TakeProfit) // Runner Position
                {
@@ -31,7 +31,7 @@ bool M_CheckRunnerToTP1()
                
          if(PositionSelectByTicket(ticket))
          {
-            if(PositionGetString(POSITION_SYMBOL) == _Symbol)
+            if(PositionGetString(POSITION_SYMBOL) == _Symbol && PositionGetInteger(POSITION_MAGIC) == nMagicNumber)
             {
                if(PositionGetDouble(POSITION_TP) == 0 && PositionGetDouble(POSITION_SL) != stGVL.TakeProfit) // Runner Position
                {

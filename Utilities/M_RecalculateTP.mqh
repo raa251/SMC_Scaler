@@ -6,7 +6,7 @@ bool M_RecalculateTP()
                
       if(PositionSelectByTicket(ticket))
       {
-         if(PositionGetString(POSITION_SYMBOL) == _Symbol)
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol && PositionGetInteger(POSITION_MAGIC) == nMagicNumber)
          {
             if(PositionGetDouble(POSITION_TP) != 0) // Runner Position
             {

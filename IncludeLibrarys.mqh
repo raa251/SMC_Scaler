@@ -25,6 +25,7 @@
 #include "Utilities/M_CalculateLotSize.mqh"
 #include "Utilities/M_DetermineTimes.mqh"
 #include "Utilities/M_GetCandleData.mqh"
+#include "Utilities/M_CountPositions.mqh"
 #include "Utilities/M_NewBar_CurrTF.mqh"
 #include "Utilities/M_NewBar_HigherTF.mqh"
 #include "Utilities/M_Points2Price.mqh"

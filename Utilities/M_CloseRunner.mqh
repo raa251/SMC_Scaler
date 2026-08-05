@@ -8,7 +8,7 @@ bool M_CloseRunner(bool now)
                
          if(PositionSelectByTicket(ticket))
          {
-            if(PositionGetString(POSITION_SYMBOL) == _Symbol)
+            if(PositionGetString(POSITION_SYMBOL) == _Symbol && PositionGetInteger(POSITION_MAGIC) == nMagicNumber)
             {
                if(PositionGetDouble(POSITION_TP) == 0)
                {

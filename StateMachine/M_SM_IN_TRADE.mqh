@@ -1,6 +1,8 @@
 void M_SM_IN_TRADE()
 {
-   if(PositionsTotal() > 0) // Open Position
+   int nOwnPositions = M_CountPositions();
+
+   if(nOwnPositions > 0) // Open Position
    {
       if(!stGVL.bTPChecked)
       {
@@ -25,7 +27,7 @@ void M_SM_IN_TRADE()
                stGVL.bRunnerPosition_CheckClose = true;
             }
          }
-         else if(nMoveBeAtProfit == 0 && PositionsTotal() == 1 && bRunnerPosition) // When Move BE = 0 then start looking to close when other trade hit TP
+         else if(nMoveBeAtProfit == 0 && nOwnPositions == 1 && bRunnerPosition) // When Move BE = 0 then start looking to close when other trade hit TP
          {
             stGVL.bRunnerPosition_CheckClose = true;
          }
@@ -47,7 +49,7 @@ void M_SM_IN_TRADE()
                stGVL.bRunnerPosition_CheckClose = true;
             }
          }
-         else if(nMoveBeAtProfit == 0 && PositionsTotal() == 1 && bRunnerPosition) // When Move BE = 0 then start looking to close when other trade hit TP
+         else if(nMoveBeAtProfit == 0 && nOwnPositions == 1 && bRunnerPosition) // When Move BE = 0 then start looking to close when other trade hit TP
          {
             stGVL.bRunnerPosition_CheckClose = true;
          }

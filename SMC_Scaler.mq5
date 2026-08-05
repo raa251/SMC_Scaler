@@ -18,6 +18,8 @@ input double   fLossPerLot = 0;              // Loss per lot in dollar
 input int      nMaxSpread = 0;               // Maximum spread in points
 input double   nMaxDailyProfit = 0;          // Maximum daily profit in percent
 input double   nMaxDailyLoss = 0;            // Maximum daily loss in percent
+input ulong    nMagicNumber = 20260805;      // Magic number
+input int      nSlippagePoints = 10;         // Maximum slippage in points
 
 // Strategy parameters
 input string   Section_Strategy        = "";    // ---STRATEGY---
@@ -93,8 +95,11 @@ datetime tmpDebugTime;
 //+------------------------------------------------------------------+
 int OnInit()
 {
+   Trade.SetExpertMagicNumber(nMagicNumber);
+   Trade.SetDeviationInPoints(nSlippagePoints);
+
    M_Points2Price();
-   
+
    tmpDebugTime = dtDebugTime;
    
    M_SetBoxNames();

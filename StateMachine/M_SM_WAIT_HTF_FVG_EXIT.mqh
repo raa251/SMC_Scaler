@@ -2,7 +2,7 @@ void M_SM_WAIT_HTF_FVG_EXIT()
 {
    int FVGReachedIndex = iBarShift(_Symbol, PERIOD_CURRENT, stGVL.dtFVGReached_Time_HTF);
    
-   if(stGVL.Candle[1].close > stGVL.LastFVGTop_HTF || stGVL.Candle[1].close < stGVL.LastFVGBottom_HTF && !stGVL.bWaitForNewCurrBar) 
+   if((stGVL.Candle[1].close > stGVL.LastFVGTop_HTF || stGVL.Candle[1].close < stGVL.LastFVGBottom_HTF) && !stGVL.bWaitForNewCurrBar)
    {
       // Close is outside FVG
       stGVL.eStateMachine = SM_RESET;

@@ -6,7 +6,7 @@ bool M_AllSLToEntry()
                
       if(PositionSelectByTicket(ticket))
       {
-         if(PositionGetString(POSITION_SYMBOL) == _Symbol)
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol && PositionGetInteger(POSITION_MAGIC) == nMagicNumber)
          {
             stGVL.StopLoss = stGVL.Entry;
             M_MoveBE(ticket);
