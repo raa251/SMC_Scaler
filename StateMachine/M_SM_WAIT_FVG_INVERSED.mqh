@@ -16,7 +16,7 @@ void M_SM_WAIT_FVG_INVERSED()
          stGVL.eStateMachine = SM_RESET;
          return;
       }
-      else if(stGVL.Candle[1].close < stGVL.LastFVGBottom - stGVL.fMaxDistanceFVGInverse_Price)
+      else if(stGVL.Candle[1].close < stGVL.LastFVGBottom - stGVL.fMaxDistanceFVGInverse_Price && stGVL.fMaxDistanceFVGInverse_Price != 0)
       {
          M_LogWarning("Price is too far away from FVG to inverse");
          stGVL.eStateMachine = SM_RESET;
