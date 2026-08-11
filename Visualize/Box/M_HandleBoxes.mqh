@@ -1,14 +1,14 @@
 bool M_HandleBoxes()
 {
-   if(stGVL.LastFVGTop != 0 && stGVL.LastFVGBottom != 0)
+   if(stGVL.stFVG.Top != 0 && stGVL.stFVG.Bottom != 0)
    {
-      M_ExtendBox(stGVL.Rect_FVG, stGVL.Rect_ActFVG_Number);
+      M_ExtendBox(stGVL.stFVG.Name, stGVL.stFVG.Number);
    }
-   
-   if(stGVL.LastFVGTop_HTF != 0 && stGVL.LastFVGBottom_HTF != 0)
+
+   if(stGVL.stFVG_HTF.Top != 0 && stGVL.stFVG_HTF.Bottom != 0)
    {
-      M_ExtendBox(stGVL.Rect_FVG_HTF, stGVL.Rect_ActFVG_Number_HTF);
+      M_ExtendBox(stGVL.stFVG_HTF.Name, stGVL.stFVG_HTF.Number);
    }
-   
+
    return true;
 }

@@ -23,6 +23,9 @@ bool M_Points2Price()
    
    tmp = nMaxDistanceFVGInverse;
    stGVL.fMaxDistanceFVGInverse_Price = tmp * tick_size;
-   
+
+   tmp = nMinSLDistance;
+   stGVL.fMinSLDistance_Price = tmp * tick_size;
+
    return true;
 }

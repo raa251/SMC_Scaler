@@ -6,13 +6,15 @@ void M_SM_RESET()
    stGVL.Entry = 0;
    stGVL.eCurrentDirection = DIR_NONE;
    
-   stGVL.LastFVGTop = 0;
-   stGVL.LastFVGBottom = 0;
-   stGVL.LastFVGIndex = 0;
-   
-   stGVL.LastFVGTop_HTF = 0;
-   stGVL.LastFVGBottom_HTF = 0;
-   stGVL.LastFVGIndex_HTF = 0;
+   stGVL.stFVG.Top = 0;
+   stGVL.stFVG.Bottom = 0;
+   stGVL.stFVG.Start_Time = 0;
+   stGVL.stFVG.End_Time = 0;
+
+   stGVL.stFVG_HTF.Top = 0;
+   stGVL.stFVG_HTF.Bottom = 0;
+   stGVL.stFVG_HTF.Start_Time = 0;
+   stGVL.stFVG_HTF.End_Time = 0;
    stGVL.dtFVGReached_Time_HTF = 0;
    stGVL.dtFVGCreated_Time_HTF = 0;
    

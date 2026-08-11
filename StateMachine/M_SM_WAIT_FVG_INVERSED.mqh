@@ -1,10 +1,22 @@
 void M_SM_WAIT_FVG_INVERSED()
 {
+   // Keep looking for a closer/fresher IFVG while we wait for the current one to
+   // inverse - only re-scans once per new bar (M_SearchFVG is a no-op otherwise
+   // since candle[1] onward hasn't changed yet), and only replaces stFVG when a
+   // genuinely different candidate is found.
+   if(stGVL.dtTimeCurrent_CurrTF != stGVL.dtTimeLast_CurrTF)
+   {
+      if(M_SearchFVG(stGVL.stFVG, stGVL.eCurrentDirection, nCandlesLookbackFVG))
+      {
+         M_LogInfo("Switched to a closer IFVG while waiting for inversion");
+      }
+   }
+
    int FVGReachedIndex = iBarShift(_Symbol, PERIOD_CURRENT, stGVL.dtFVGReached_Time_HTF);
-   
+
    // Long
    if(stGVL.eCurrentDirection == DIR_LONG)
-   {        
+   {
       if(FVGReachedIndex > nMaxCandlesFVGInverse && nMaxCandlesFVGInverse != 0)
       {
          M_LogWarning("Maximum candles to inverse FVG reached");
@@ -16,13 +28,13 @@ void M_SM_WAIT_FVG_INVERSED()
          stGVL.eStateMachine = SM_RESET;
          return;
       }
-      else if(stGVL.Candle[1].close < stGVL.LastFVGBottom - stGVL.fMaxDistanceFVGInverse_Price && stGVL.fMaxDistanceFVGInverse_Price != 0)
+      else if(stGVL.Candle[1].close < stGVL.stFVG.Bottom - stGVL.fMaxDistanceFVGInverse_Price && stGVL.fMaxDistanceFVGInverse_Price != 0)
       {
          M_LogWarning("Price is too far away from FVG to inverse");
          stGVL.eStateMachine = SM_RESET;
          return;
       }
-      else if(stGVL.Candle[1].close <= stGVL.LastFVGTop) // FVG not inversed yet
+      else if(stGVL.Candle[1].close <= stGVL.stFVG.Top) // FVG not inversed yet
       {
          return;
       }
@@ -47,7 +59,14 @@ void M_SM_WAIT_FVG_INVERSED()
             stGVL.eStateMachine = SM_RESET;
             return;
          }
-         
+
+         if(stGVL.fMinSLDistance_Price != 0 && CurrentEntryPrice - stGVL.StopLoss < stGVL.fMinSLDistance_Price)
+         {
+            M_LogWarning("Stoploss distance too small (" + DoubleToString(CurrentEntryPrice - stGVL.StopLoss) + "), skipping trade");
+            stGVL.eStateMachine = SM_RESET;
+            return;
+         }
+
          stGVL.Entry = CurrentEntryPrice;
          stGVL.TakeProfit = stGVL.Entry + (stGVL.Entry - stGVL.StopLoss) * fRiskReward;
          stGVL.nNumberOfPositions = 1;
@@ -87,13 +106,13 @@ void M_SM_WAIT_FVG_INVERSED()
          stGVL.eStateMachine = SM_RESET;
          return;
       }
-      else if(stGVL.Candle[1].close > stGVL.LastFVGTop + stGVL.fMaxDistanceFVGInverse_Price)
+      else if(stGVL.Candle[1].close > stGVL.stFVG.Top + stGVL.fMaxDistanceFVGInverse_Price)
       {
          M_LogWarning("Price is too far away from FVG to inverse");
          stGVL.eStateMachine = SM_RESET;
          return;
       }
-      else if(stGVL.Candle[1].close >= stGVL.LastFVGBottom) // FVG not inversed yet
+      else if(stGVL.Candle[1].close >= stGVL.stFVG.Bottom) // FVG not inversed yet
       {
          return;
       }
@@ -117,7 +136,14 @@ void M_SM_WAIT_FVG_INVERSED()
             stGVL.eStateMachine = SM_RESET;
             return;
          }
-         
+
+         if(stGVL.fMinSLDistance_Price != 0 && stGVL.StopLoss - CurrentEntryPrice < stGVL.fMinSLDistance_Price)
+         {
+            M_LogWarning("Stoploss distance too small (" + DoubleToString(stGVL.StopLoss - CurrentEntryPrice) + "), skipping trade");
+            stGVL.eStateMachine = SM_RESET;
+            return;
+         }
+
          stGVL.Entry = CurrentEntryPrice;
          stGVL.TakeProfit = stGVL.Entry - (stGVL.StopLoss - stGVL.Entry) * fRiskReward;
          stGVL.nNumberOfPositions = 1;

@@ -3,6 +3,7 @@
 #include <Trade\AccountInfo.mqh>
 #include <Trade\SymbolInfo.mqh>
 
+#include "Structs/ST_FVG.mqh"
 #include "Structs/stGlobalVars.mqh"
 #include "Structs/E_TREND_FILTER.mqh"
 #include "Structs/E_SL_PLACEMENT.mqh"
@@ -26,10 +27,12 @@
 #include "Utilities/M_DetermineTimes.mqh"
 #include "Utilities/M_GetCandleData.mqh"
 #include "Utilities/M_CountPositions.mqh"
+#include "Utilities/M_TrackDrawdown.mqh"
 #include "Utilities/M_NewBar_CurrTF.mqh"
 #include "Utilities/M_NewBar_HigherTF.mqh"
 #include "Utilities/M_Points2Price.mqh"
 #include "Utilities/M_NewDay.mqh"
+#include "Utilities/M_NewMonth.mqh"
 #include "Utilities/M_RecalculateTP.mqh"
 #include "Utilities/M_CloseRunner.mqh"
 #include "Utilities/M_CheckRunnerToTp1.mqh"
@@ -37,6 +40,7 @@
 #include "Utilities/M_ModifyPositionSL.mqh"
 #include "Utilities/M_MoveBE.mqh"
 #include "Utilities/M_SearchSL.mqh"
+#include "Utilities/M_SearchFVG.mqh"
 #include "Utilities/Structure/M_StructureTrendHTF.mqh"
 #include "Utilities/Structure/M_StructureTrendCTF.mqh"
 #include "Utilities/Structure/M_SearchNewHigh.mqh"

@@ -11,7 +11,7 @@ bool M_DipOK(int CandlesToLookback)
       DipOK = true;
       if(stGVL.eCurrentDirection == DIR_LONG)
       {
-         double DipMinimum = stGVL.LastFVGTop_HTF - (stGVL.LastFVGTop_HTF - stGVL.LastFVGBottom_HTF) * (fMaxDipIntoFVG / 100);
+         double DipMinimum = stGVL.stFVG_HTF.Top - (stGVL.stFVG_HTF.Top - stGVL.stFVG_HTF.Bottom) * (fMaxDipIntoFVG / 100);
          for(int i = 1; i <= CandlesToLookback; i++)
          {
             if(stGVL.Candle[i].low < DipMinimum)
@@ -23,7 +23,7 @@ bool M_DipOK(int CandlesToLookback)
       }
       else
       {
-         double DipMaximum = stGVL.LastFVGBottom_HTF + (stGVL.LastFVGTop_HTF - stGVL.LastFVGBottom_HTF) * (fMaxDipIntoFVG / 100);
+         double DipMaximum = stGVL.stFVG_HTF.Bottom + (stGVL.stFVG_HTF.Top - stGVL.stFVG_HTF.Bottom) * (fMaxDipIntoFVG / 100);
          for(int i = 1; i <= CandlesToLookback; i++)
          {
             if(stGVL.Candle[i].high > DipMaximum)

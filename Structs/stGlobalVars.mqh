@@ -28,6 +28,11 @@ struct stGlobalVars
    MqlCalendarValue NewsValues[];
    bool bFilterActive;
    double DailyStartingBalance;
+   double InitialBalance;
+   double fMaxObservedDailyLossPct;
+   double fMaxObservedTotalDDPct;
+   double MonthStartingBalance;
+   int nLastMonthKey;
    
    bool bTPChecked;
    bool MovedBE;
@@ -37,17 +42,8 @@ struct stGlobalVars
    datetime ServerTime;
    datetime GMTTime;
    
-   string Rect_FVG;
-   int Rect_ActFVG_Number;
-   double LastFVGTop;
-   double LastFVGBottom;
-   int LastFVGIndex;
-   
-   string Rect_FVG_HTF;
-   int Rect_ActFVG_Number_HTF;
-   double LastFVGTop_HTF;
-   double LastFVGBottom_HTF;
-   int LastFVGIndex_HTF;
+   ST_FVG stFVG;       // Fair value gap to inverse, current timeframe
+   ST_FVG stFVG_HTF;   // Fair value gap for liquidity, higher timeframe
    datetime dtFVGReached_Time_HTF;
    datetime dtFVGCreated_Time_HTF;
    
@@ -67,6 +63,7 @@ struct stGlobalVars
    double fMinIFVGSize_Price;
    double fMaxIFVGSize_Price;
    double fMaxDistanceFVGInverse_Price;
+   double fMinSLDistance_Price;
    
    // Trend Structure
    E_DIRECTION eTrendStructure_HTF;

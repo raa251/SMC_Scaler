@@ -13,15 +13,18 @@ double M_CalculateLotSize(double riskPercent, double stopLossPoints)
    double maxLot  = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
    double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
 
+   if(tick_value <= 0)
+      return 0.0;
+
    // --- Money to risk
    double riskMoney = balance * riskPercent / 100.0;
-   
-   double lot = riskMoney / stopLossPoints;
-      
+
+   double lot = riskMoney / (stopLossPoints * tick_value);
+
    // --- Loss per Lot
    double CalcedLoss = fLossPerLot * lot;
    riskMoney = riskMoney - CalcedLoss;
-   lot = riskMoney / stopLossPoints;
+   lot = riskMoney / (stopLossPoints * tick_value);
 
    // Divide by number of positions
    lot = lot / stGVL.nNumberOfPositions;

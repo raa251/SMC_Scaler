@@ -8,11 +8,11 @@ double M_SearchSL()
    {
       if(eSLPlacement == END_OF_FVG)
       {
-         tmpSL = stGVL.LastFVGBottom_HTF;
+         tmpSL = stGVL.stFVG_HTF.Bottom;
       }
       else if(eSLPlacement == MIDDLE_OF_FVG)
       {
-         tmpSL = stGVL.LastFVGTop_HTF - ((stGVL.LastFVGTop_HTF - stGVL.LastFVGBottom_HTF) / 2);
+         tmpSL = stGVL.stFVG_HTF.Top - ((stGVL.stFVG_HTF.Top - stGVL.stFVG_HTF.Bottom) / 2);
       }
       else
       {
@@ -38,11 +38,11 @@ double M_SearchSL()
    {
       if(eSLPlacement == END_OF_FVG)
       {
-         tmpSL = stGVL.LastFVGTop_HTF;
+         tmpSL = stGVL.stFVG_HTF.Top;
       }
       else if(eSLPlacement == MIDDLE_OF_FVG)
       {
-         tmpSL = stGVL.LastFVGBottom_HTF + ((stGVL.LastFVGTop_HTF - stGVL.LastFVGBottom_HTF) / 2);
+         tmpSL = stGVL.stFVG_HTF.Bottom + ((stGVL.stFVG_HTF.Top - stGVL.stFVG_HTF.Bottom) / 2);
       }
       else
       {

@@ -27,6 +27,13 @@ void M_NewBar_CurrTF()
    MqlDateTime t;
    TimeToStruct(stGVL.dtCurrentTime, t);
    stGVL.nActualHour = t.hour;
-   
+
+   int currentMonthKey = t.year * 12 + t.mon;
+   if(currentMonthKey != stGVL.nLastMonthKey)
+   {
+      stGVL.nLastMonthKey = currentMonthKey;
+      M_NewMonth();
+   }
+
    M_HandleBoxes();
 }

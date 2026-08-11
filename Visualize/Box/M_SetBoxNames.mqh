@@ -1,7 +1,7 @@
 bool M_SetBoxNames()
 {
-   stGVL.Rect_FVG = "FVG";
-   stGVL.Rect_FVG_HTF = "FVG_HTF";
-   
+   stGVL.stFVG.Name = "FVG";
+   stGVL.stFVG_HTF.Name = "FVG_HTF";
+
    return true;
 }

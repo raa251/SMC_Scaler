@@ -6,6 +6,7 @@
 // Include all mqh files
 // Libraries
 #include "IncludeLibrarys.mqh"
+#include <ClaudeConnector/Reporter.mqh>
 
 
 
@@ -30,6 +31,7 @@ input double   fMaxDipIntoFVG = 0;               // Maximum dip into FVG in perc
 input int      nCandlesLookbackFVG = 10;        // Number of candles to look back for IFVG
 input int      nMaxCandlesFVGInverse = 10;      // Maximum candles to inverse FVG
 input int      nMaxDistanceFVGInverse = 0;      // Maximum distance to inverse FVG
+input int      nMinSLDistance = 100;            // Minimum stoploss distance in points (0 = disabled)
 input ENUM_TIMEFRAMES eHigherTF = PERIOD_M15;   // Higher timeframe for liquidity search
 input bool     bRunnerPosition = false;         // Runner position
 input E_TREND_FILTER eRunnerClose = EMA;        // Runner position  close mode
@@ -83,6 +85,9 @@ input string   sNewsCurrency5 = "";                                             
 // Debug
 input string   Section_Debug           = ""; // ---DEBUG---
 input datetime dtDebugTime;                  // Debug time breakpoint (only for testing purpose)
+input string   InpCC_RunId = "manual";       // ClaudeConnector run id (set by the tooling)
+input double   fCC_DDPenaltyWeight = 2.0;    // ClaudeConnector fitness: drawdown penalty weight
+input int      nCC_MinTradesForFullScore = 20; // ClaudeConnector fitness: trades needed for full sample score
 
 stGlobalVars stGVL;
 CTrade Trade;
@@ -97,6 +102,8 @@ int OnInit()
 {
    Trade.SetExpertMagicNumber(nMagicNumber);
    Trade.SetDeviationInPoints(nSlippagePoints);
+
+   stGVL.InitialBalance = AccountInfoDouble(ACCOUNT_BALANCE);
 
    M_Points2Price();
 
@@ -142,6 +149,8 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
+   M_TrackDrawdown();
+
    M_GetCandleData(PERIOD_CURRENT, stGVL.Candle, nMaxCandles);
    M_GetCandleData(eHigherTF, stGVL.CandleHigherTF, nMaxCandlesHigherTF);
    
@@ -154,4 +163,26 @@ void OnTick()
       M_NewBar_CurrTF();
       stGVL.dtTimeLast_CurrTF = stGVL.dtTimeCurrent_CurrTF;
    }
+}
+
+//+------------------------------------------------------------------+
+//| Called once per backtest/optimization pass                       |
+//+------------------------------------------------------------------+
+double OnTester()
+{
+   string paramsJson = StringFormat(
+      "\"fRiskReward\":%.2f,\"nCandlesLookbackFVG\":%d,\"nMaxCandlesFVGInverse\":%d,"
+      "\"nMaxCandlesToReachFVG\":%d,\"fMaxDipIntoFVG\":%.2f,\"eSLPlacement\":%d,"
+      "\"eTrendFilter\":%d,\"nMinDiffEMA\":%d,\"nMinFVGSize\":%d,\"nMaxFVGSize\":%d,"
+      "\"nMinIFVGSize\":%d,\"nMaxIFVGSize\":%d,\"nMaxDistanceFVGInverse\":%d,"
+      "\"nMinSLDistance\":%d,\"nMaxTradesPerDay\":%d,\"fRiskPerTrade\":%.2f,"
+      "\"maxObservedDailyLossPct\":%.2f,\"maxObservedTotalDDPct\":%.2f",
+      fRiskReward, nCandlesLookbackFVG, nMaxCandlesFVGInverse,
+      nMaxCandlesToReachFVG, fMaxDipIntoFVG, (int)eSLPlacement,
+      (int)eTrendFilter, nMinDiffEMA, nMinFVGSize, nMaxFVGSize,
+      nMinIFVGSize, nMaxIFVGSize, nMaxDistanceFVGInverse,
+      nMinSLDistance, nMaxTradesPerDay, fRiskPerTrade,
+      stGVL.fMaxObservedDailyLossPct, stGVL.fMaxObservedTotalDDPct);
+
+   return CC_ReportTesterResult(InpCC_RunId, paramsJson, fCC_DDPenaltyWeight, nCC_MinTradesForFullScore);
 }

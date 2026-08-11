@@ -9,7 +9,7 @@ void M_SM_WAIT_FVG_REACHED()
    }
    else if(stGVL.eCurrentDirection == DIR_LONG)
    {
-      if(stGVL.Candle[0].low < stGVL.LastFVGTop_HTF) // FVG reached
+      if(stGVL.Candle[0].low < stGVL.stFVG_HTF.Top) // FVG reached
       {
          stGVL.dtFVGReached_Time_HTF = stGVL.dtCurrentTime;
          stGVL.eStateMachine = SM_SEARCH_INVERSE_FVG;
@@ -17,7 +17,7 @@ void M_SM_WAIT_FVG_REACHED()
    }
    else if(stGVL.eCurrentDirection == DIR_SHORT)
    {
-      if(stGVL.Candle[0].high > stGVL.LastFVGBottom_HTF) // FVG reached
+      if(stGVL.Candle[0].high > stGVL.stFVG_HTF.Bottom) // FVG reached
       {
          stGVL.dtFVGReached_Time_HTF = stGVL.dtCurrentTime;
          stGVL.eStateMachine = SM_SEARCH_INVERSE_FVG;
