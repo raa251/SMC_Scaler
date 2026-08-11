@@ -357,6 +357,36 @@
       "path":"Utilities\\M_CheckCloseRunner.mqh",
       "compile":false,
       "relative_to_project":true
+    },
+    {
+      "path":"Structs\\ST_FVG.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\M_CountPositions.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\M_TrackDrawdown.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\M_NewMonth.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"Utilities\\M_SearchFVG.mqh",
+      "compile":false,
+      "relative_to_project":true
+    },
+    {
+      "path":"MQL5\\Include\\ClaudeConnector\\Reporter.mqh",
+      "compile":false,
+      "relative_to_project":false
     }
   ]
 }

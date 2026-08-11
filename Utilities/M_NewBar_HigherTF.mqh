@@ -39,11 +39,12 @@ void M_NewBar_HigherTF()
          stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, eHigherTF, 2);
          stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, eHigherTF, 0);
          stGVL.stFVG_HTF.Number     = stGVL.stFVG_HTF.Number + 1;
+         stGVL.stFVG_HTF.Touched    = false;
 
          stGVL.eCurrentDirection = DIR_LONG;
 
          stGVL.dtFVGCreated_Time_HTF = iTime(_Symbol, PERIOD_CURRENT, 0);
-         M_CreateBox(stGVL.stFVG_HTF.Name, stGVL.stFVG_HTF.Number, stGVL.stFVG_HTF.Start_Time, stGVL.stFVG_HTF.End_Time, stGVL.stFVG_HTF.Top, stGVL.stFVG_HTF.Bottom, clrYellow);
+         M_CreateBox(stGVL.stFVG_HTF.Name, stGVL.stFVG_HTF.Number, stGVL.stFVG_HTF.Start_Time, stGVL.stFVG_HTF.End_Time, stGVL.stFVG_HTF.Top, stGVL.stFVG_HTF.Bottom, clrGreen);
 
          M_LogInfo("FVG for buy found, TOP=" + DoubleToString(stGVL.stFVG_HTF.Top) + " BOTTOM=" + DoubleToString(stGVL.stFVG_HTF.Bottom));
          stGVL.eStateMachine = SM_WAIT_FVG_REACHED;
@@ -82,11 +83,12 @@ void M_NewBar_HigherTF()
          stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, eHigherTF, 2);
          stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, eHigherTF, 0);
          stGVL.stFVG_HTF.Number     = stGVL.stFVG_HTF.Number + 1;
+         stGVL.stFVG_HTF.Touched    = false;
 
          stGVL.eCurrentDirection = DIR_SHORT;
 
          stGVL.dtFVGCreated_Time_HTF = iTime(_Symbol, PERIOD_CURRENT, 0);
-         M_CreateBox(stGVL.stFVG_HTF.Name, stGVL.stFVG_HTF.Number, stGVL.stFVG_HTF.Start_Time, stGVL.stFVG_HTF.End_Time, stGVL.stFVG_HTF.Top, stGVL.stFVG_HTF.Bottom, clrYellow);
+         M_CreateBox(stGVL.stFVG_HTF.Name, stGVL.stFVG_HTF.Number, stGVL.stFVG_HTF.Start_Time, stGVL.stFVG_HTF.End_Time, stGVL.stFVG_HTF.Top, stGVL.stFVG_HTF.Bottom, clrRed);
 
          M_LogInfo("FVG for sell found, TOP=" + DoubleToString(stGVL.stFVG_HTF.Top) + " BOTTOM=" + DoubleToString(stGVL.stFVG_HTF.Bottom));
          stGVL.eStateMachine = SM_WAIT_FVG_REACHED;

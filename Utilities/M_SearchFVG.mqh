@@ -38,7 +38,7 @@ bool M_SearchFVG(ST_FVG &fvg, E_DIRECTION dir, int nLookback)
             fTop = stGVL.Candle[i+2].low;
             fBottom = stGVL.Candle[i].high;
             bMatch = true;
-            clr = clrAquamarine;
+            clr = clrBlue;
          }
       }
       else if(dir == DIR_SHORT && stGVL.Candle[i+1].close > stGVL.Candle[i+1].open) // middle candle is bullish
@@ -54,7 +54,7 @@ bool M_SearchFVG(ST_FVG &fvg, E_DIRECTION dir, int nLookback)
             fTop = stGVL.Candle[i].low;
             fBottom = stGVL.Candle[i+2].high;
             bMatch = true;
-            clr = clrYellow;
+            clr = clrBlue;
          }
       }
 
@@ -72,6 +72,7 @@ bool M_SearchFVG(ST_FVG &fvg, E_DIRECTION dir, int nLookback)
          fvg.Start_Time = dtStart;
          fvg.End_Time = iTime(_Symbol, PERIOD_CURRENT, 0);
          fvg.Number = fvg.Number + 1;
+         fvg.Touched = false;
 
          M_CreateBox(fvg.Name, fvg.Number, fvg.Start_Time, fvg.End_Time, fvg.Top, fvg.Bottom, clr);
          M_LogInfo("FVG to inverse found, TOP=" + DoubleToString(fvg.Top) + " BOTTOM=" + DoubleToString(fvg.Bottom) + " Start=" + TimeToString(fvg.Start_Time));

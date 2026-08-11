@@ -1,12 +1,27 @@
 void M_SM_WAIT_FVG_INVERSED()
 {
-   // Keep looking for a closer/fresher IFVG while we wait for the current one to
-   // inverse - only re-scans once per new bar (M_SearchFVG is a no-op otherwise
-   // since candle[1] onward hasn't changed yet), and only replaces stFVG when a
-   // genuinely different candidate is found.
+   // Keep looking for a closer/fresher IFVG while we wait - but only as long as the
+   // held IFVG hasn't actually been touched by price yet. Once a candle trades into
+   // the zone we commit to it instead of still re-scanning; otherwise price sitting
+   // inside/near two overlapping IFVGs made this flip-flop between them bar after bar
+   // (confirmed in the tester log - same two zones swapped back and forth repeatedly).
+   //
+   // The touch check only looks at candles that closed strictly AFTER the FVG was
+   // found/last switched to (Candle[1].time > stFVG.End_Time). The FVG's own defining
+   // candle always satisfies a plain zone-overlap test trivially - its high/low IS one
+   // of the zone's boundaries by construction - which made "touched" fire the instant
+   // an IFVG was found and froze the search on whatever was found first, even while
+   // price kept moving away and forming fresher, closer IFVGs (confirmed: the "too far
+   // away to inverse" warning fired right after discovery, the very first tick it could).
    if(stGVL.dtTimeCurrent_CurrTF != stGVL.dtTimeLast_CurrTF)
    {
-      if(M_SearchFVG(stGVL.stFVG, stGVL.eCurrentDirection, nCandlesLookbackFVG))
+      if(!stGVL.stFVG.Touched && stGVL.Candle[1].time > stGVL.stFVG.End_Time
+         && stGVL.Candle[1].low <= stGVL.stFVG.Top && stGVL.Candle[1].high >= stGVL.stFVG.Bottom)
+      {
+         stGVL.stFVG.Touched = true;
+      }
+
+      if(!stGVL.stFVG.Touched && M_SearchFVG(stGVL.stFVG, stGVL.eCurrentDirection, nCandlesLookbackFVG))
       {
          M_LogInfo("Switched to a closer IFVG while waiting for inversion");
       }
@@ -106,7 +121,7 @@ void M_SM_WAIT_FVG_INVERSED()
          stGVL.eStateMachine = SM_RESET;
          return;
       }
-      else if(stGVL.Candle[1].close > stGVL.stFVG.Top + stGVL.fMaxDistanceFVGInverse_Price)
+      else if(stGVL.Candle[1].close > stGVL.stFVG.Top + stGVL.fMaxDistanceFVGInverse_Price && stGVL.fMaxDistanceFVGInverse_Price != 0)
       {
          M_LogWarning("Price is too far away from FVG to inverse");
          stGVL.eStateMachine = SM_RESET;
