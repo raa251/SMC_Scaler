@@ -34,10 +34,12 @@ void M_NewBar_HigherTF()
       }
       else
       { // fair value gap
+         int nStartIndexCTF = iBarShift(_Symbol, PERIOD_CURRENT, iTime(_Symbol, eHigherTF, 2));
+
          stGVL.stFVG_HTF.Top        = stGVL.CandleHigherTF[1].low;
          stGVL.stFVG_HTF.Bottom     = stGVL.CandleHigherTF[3].high;
-         stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, eHigherTF, 2);
-         stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, eHigherTF, 0);
+         stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, PERIOD_CURRENT, nStartIndexCTF);
+         stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, PERIOD_CURRENT, 0);
          stGVL.stFVG_HTF.Number     = stGVL.stFVG_HTF.Number + 1;
          stGVL.stFVG_HTF.Touched    = false;
 
@@ -78,10 +80,12 @@ void M_NewBar_HigherTF()
       }
       else
       { // fair value gap
+         int nStartIndexCTF = iBarShift(_Symbol, PERIOD_CURRENT, iTime(_Symbol, eHigherTF, 2));
+
          stGVL.stFVG_HTF.Top        = stGVL.CandleHigherTF[3].low;
          stGVL.stFVG_HTF.Bottom     = stGVL.CandleHigherTF[1].high;
-         stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, eHigherTF, 2);
-         stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, eHigherTF, 0);
+         stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, PERIOD_CURRENT, nStartIndexCTF);
+         stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, PERIOD_CURRENT, 0);
          stGVL.stFVG_HTF.Number     = stGVL.stFVG_HTF.Number + 1;
          stGVL.stFVG_HTF.Touched    = false;
 

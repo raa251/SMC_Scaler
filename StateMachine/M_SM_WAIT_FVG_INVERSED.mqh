@@ -13,7 +13,18 @@ void M_SM_WAIT_FVG_INVERSED()
    // an IFVG was found and froze the search on whatever was found first, even while
    // price kept moving away and forming fresher, closer IFVGs (confirmed: the "too far
    // away to inverse" warning fired right after discovery, the very first tick it could).
-   if(stGVL.dtTimeCurrent_CurrTF != stGVL.dtTimeLast_CurrTF)
+   //
+   // Crucially, this whole block is skipped once the held FVG has already been inverted
+   // by Candle[1] this bar - otherwise the inversion candle itself becomes the new
+   // tmpHigh/tmpLow inside M_SearchFVG, which makes the FVG we're about to trade fail its
+   // own "not already taken out" check and get replaced by some other, worse candidate in
+   // the very same tick the entry should have fired (confirmed in the tester log: price
+   // closed back through the held zone, no trade opened, search jumped to a farther FVG
+   // instead).
+   bool bAlreadyInverted = (stGVL.eCurrentDirection == DIR_LONG && stGVL.Candle[1].close > stGVL.stFVG.Top)
+                         || (stGVL.eCurrentDirection == DIR_SHORT && stGVL.Candle[1].close < stGVL.stFVG.Bottom);
+
+   if(!bAlreadyInverted && stGVL.dtTimeCurrent_CurrTF != stGVL.dtTimeLast_CurrTF)
    {
       if(!stGVL.stFVG.Touched && stGVL.Candle[1].time > stGVL.stFVG.End_Time
          && stGVL.Candle[1].low <= stGVL.stFVG.Top && stGVL.Candle[1].high >= stGVL.stFVG.Bottom)
