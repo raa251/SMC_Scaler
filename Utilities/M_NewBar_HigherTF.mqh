@@ -41,7 +41,6 @@ void M_NewBar_HigherTF()
          stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, PERIOD_CURRENT, nStartIndexCTF);
          stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, PERIOD_CURRENT, 0);
          stGVL.stFVG_HTF.Number     = stGVL.stFVG_HTF.Number + 1;
-         stGVL.stFVG_HTF.Touched    = false;
 
          stGVL.eCurrentDirection = DIR_LONG;
 
@@ -87,7 +86,6 @@ void M_NewBar_HigherTF()
          stGVL.stFVG_HTF.Start_Time = iTime(_Symbol, PERIOD_CURRENT, nStartIndexCTF);
          stGVL.stFVG_HTF.End_Time   = iTime(_Symbol, PERIOD_CURRENT, 0);
          stGVL.stFVG_HTF.Number     = stGVL.stFVG_HTF.Number + 1;
-         stGVL.stFVG_HTF.Touched    = false;
 
          stGVL.eCurrentDirection = DIR_SHORT;
 

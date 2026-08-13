@@ -22,7 +22,6 @@ void M_SM_WAIT_HTF_FVG_EXIT()
          stGVL.stFVG.Start_Time = iTime(_Symbol, PERIOD_CURRENT, 2);
          stGVL.stFVG.End_Time   = iTime(_Symbol, PERIOD_CURRENT, 0);
          stGVL.stFVG.Number     = stGVL.stFVG.Number + 1;
-         stGVL.stFVG.Touched    = false;
 
          M_CreateBox(stGVL.stFVG.Name, stGVL.stFVG.Number, stGVL.stFVG.Start_Time, stGVL.stFVG.End_Time, stGVL.stFVG.Top, stGVL.stFVG.Bottom, clrBlue);
 
@@ -43,7 +42,6 @@ void M_SM_WAIT_HTF_FVG_EXIT()
          stGVL.stFVG.Start_Time = iTime(_Symbol, PERIOD_CURRENT, 2);
          stGVL.stFVG.End_Time   = iTime(_Symbol, PERIOD_CURRENT, 0);
          stGVL.stFVG.Number     = stGVL.stFVG.Number + 1;
-         stGVL.stFVG.Touched    = false;
 
          M_CreateBox(stGVL.stFVG.Name, stGVL.stFVG.Number, stGVL.stFVG.Start_Time, stGVL.stFVG.End_Time, stGVL.stFVG.Top, stGVL.stFVG.Bottom, clrBlue);
 

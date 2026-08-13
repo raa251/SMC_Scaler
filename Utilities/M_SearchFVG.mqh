@@ -1,26 +1,32 @@
-// Scans the current-timeframe candles for the BEST inverse FVG opposing stGVL.stFVG_HTF -
-// "best" meaning the one requiring the smallest further price move to invert (lowest Top
-// for a long, highest Bottom for a short), not just the nearest one in time. Scanning the
-// whole lookback window instead of stopping at the first match matters once this is called
-// repeatedly (e.g. once per bar while SM_WAIT_FVG_INVERSED is waiting): taking the first
-// time-ordered match could jump from a close, easy-to-invert candidate to a technically
-// still-valid but far older/farther one once the close ones got invalidated by price action
-// (confirmed in the tester log: switched from a 0.02-wide zone right at price to one 3 points
-// away and 10 candles older, which then timed out without ever inverting).
+// Scans the current-timeframe candles for an inverse FVG opposing stGVL.stFVG_HTF and always
+// takes the freshest (nearest-in-time) valid match - i.e. the first one hit scanning from i=1
+// (most recent closed candle) upward.
 //
-// Safe to call repeatedly - if the best match is the same one already held in `fvg` (same
-// Start_Time), nothing is redrawn/relogged and it returns false. Only a genuinely different
-// (better) IFVG updates `fvg` and returns true.
+// The zone check (Condition2) only excludes candidates beyond the HTF FVG's FAR boundary (the
+// one price would have to break for the setup to be invalidated) - not its near boundary. This
+// matters because this function keeps getting called for as long as we're waiting for
+// inversion, including after price has already entered the HTF FVG (SM_WAIT_HTF_FVG_EXIT /
+// SM_WAIT_FVG_INVERSED). A stricter "candidate must sit above/below the HTF FVG entirely" check
+// would only ever match candidates found before price touched the zone - any IFVG that forms
+// deeper inside the zone as price keeps moving through it would always fail that check, so with
+// bSearchFVGWithinHTF_FVG=true price could fall straight through the whole zone forming several
+// fresh IFVGs and none of them would ever be picked up.
+//
+// The held `fvg` only ever moves FORWARD in time:
+//   - freshest match has the same Start_Time as the held FVG -> nothing to do, still holding it.
+//   - freshest match is NEWER than the held FVG -> price moved further into the HTF FVG and a
+//     new IFVG formed there; switch to it, that is the whole point of calling this repeatedly
+//     while waiting for inversion.
+//   - freshest match is OLDER than the held FVG -> the FVG we were holding has dropped out of
+//     the scan (invalidated/taken out), leaving only stale candidates behind it. Do NOT fall
+//     back to one of those - that is exactly the flip-flopping between IFVGs this used to cause.
+//     Treat it as "nothing usable found" and let the caller's own max-candles-to-inverse timeout
+//     handle the held FVG expiring.
 bool M_SearchFVG(ST_FVG &fvg, E_DIRECTION dir, int nLookback)
 {
    int NrCLDs = MathMin(nLookback, 97);
    double tmpLow = DBL_MAX;
    double tmpHigh = 0;
-
-   double bestTop = 0;
-   double bestBottom = 0;
-   int bestIndex = -1;
-   double bestDistance = DBL_MAX;
 
    for(int i = 1; i <= NrCLDs; i++) // Bei 1 anfangen, da 0 noch nicht geschlossen ist
    {
@@ -40,7 +46,7 @@ bool M_SearchFVG(ST_FVG &fvg, E_DIRECTION dir, int nLookback)
       if(dir == DIR_LONG && stGVL.Candle[i+1].open > stGVL.Candle[i+1].close) // middle candle is bearish
       {
          bool Condition1 = stGVL.Candle[i+2].low > stGVL.Candle[i].high;                 // Gap between Candle i and i+2 existing
-         bool Condition2 = stGVL.Candle[i].high > stGVL.stFVG_HTF.Top;                   // FVG is above the HTF FVG
+         bool Condition2 = stGVL.Candle[i].high > stGVL.stFVG_HTF.Bottom;                // FVG is above the HTF FVG's far (bottom) boundary - inside the zone or beyond it
          bool Condition3 = stGVL.Candle[i].high >= tmpHigh;                              // FVG not already taken out
          bool Condition4 = stGVL.Candle[i+2].low - stGVL.Candle[i].high >= stGVL.fMinIFVGSize_Price || stGVL.fMinIFVGSize_Price == 0;
          bool Condition5 = stGVL.Candle[i+2].low - stGVL.Candle[i].high <= stGVL.fMaxIFVGSize_Price || stGVL.fMaxIFVGSize_Price == 0;
@@ -55,7 +61,7 @@ bool M_SearchFVG(ST_FVG &fvg, E_DIRECTION dir, int nLookback)
       else if(dir == DIR_SHORT && stGVL.Candle[i+1].close > stGVL.Candle[i+1].open) // middle candle is bullish
       {
          bool Condition1 = stGVL.Candle[i+2].high < stGVL.Candle[i].low;                 // Gap between Candle i and i+2 existing
-         bool Condition2 = stGVL.Candle[i].low < stGVL.stFVG_HTF.Bottom;                 // FVG is below the HTF FVG
+         bool Condition2 = stGVL.Candle[i].low < stGVL.stFVG_HTF.Top;                    // FVG is below the HTF FVG's far (top) boundary - inside the zone or beyond it
          bool Condition3 = stGVL.Candle[i].low <= tmpLow;                                // FVG not already taken out
          bool Condition4 = stGVL.Candle[i].low - stGVL.Candle[i+2].high >= stGVL.fMinIFVGSize_Price || stGVL.fMinIFVGSize_Price == 0;
          bool Condition5 = stGVL.Candle[i].low - stGVL.Candle[i+2].high <= stGVL.fMaxIFVGSize_Price || stGVL.fMaxIFVGSize_Price == 0;
@@ -68,43 +74,31 @@ bool M_SearchFVG(ST_FVG &fvg, E_DIRECTION dir, int nLookback)
          }
       }
 
-      if(bMatch)
+      if(!bMatch)
       {
-         // Lower is "closer to invert" either way: a long needs Top undercut (smaller Top
-         // is easier), a short needs Bottom undercut from above (larger Bottom is easier,
-         // so negate it to keep "smaller distance = better" uniform for both directions).
-         double distance = (dir == DIR_LONG) ? fTop : -fBottom;
-         if(distance < bestDistance)
-         {
-            bestDistance = distance;
-            bestTop = fTop;
-            bestBottom = fBottom;
-            bestIndex = i;
-         }
+         continue;
       }
+
+      // First match hit while scanning from the most recent candle backward is, by
+      // construction, the freshest valid IFVG currently available.
+      datetime dtCandidateStart = iTime(_Symbol, PERIOD_CURRENT, i + 1);
+
+      if(dtCandidateStart <= fvg.Start_Time) // Not newer than what we already hold - ignore it
+      {
+         return false;
+      }
+
+      fvg.Top = fTop;
+      fvg.Bottom = fBottom;
+      fvg.Start_Time = dtCandidateStart;
+      fvg.End_Time = iTime(_Symbol, PERIOD_CURRENT, 0);
+      fvg.Number = fvg.Number + 1;
+
+      M_CreateBox(fvg.Name, fvg.Number, fvg.Start_Time, fvg.End_Time, fvg.Top, fvg.Bottom, clrBlue);
+      M_LogInfo("FVG to inverse found, TOP=" + DoubleToString(fvg.Top) + " BOTTOM=" + DoubleToString(fvg.Bottom) + " Start=" + TimeToString(fvg.Start_Time));
+
+      return true;
    }
 
-   if(bestIndex < 0)
-   {
-      return false;
-   }
-
-   datetime dtStart = iTime(_Symbol, PERIOD_CURRENT, bestIndex + 1);
-
-   if(fvg.Start_Time == dtStart) // Same IFVG we already hold - nothing new
-   {
-      return false;
-   }
-
-   fvg.Top = bestTop;
-   fvg.Bottom = bestBottom;
-   fvg.Start_Time = dtStart;
-   fvg.End_Time = iTime(_Symbol, PERIOD_CURRENT, 0);
-   fvg.Number = fvg.Number + 1;
-   fvg.Touched = false;
-
-   M_CreateBox(fvg.Name, fvg.Number, fvg.Start_Time, fvg.End_Time, fvg.Top, fvg.Bottom, clrBlue);
-   M_LogInfo("FVG to inverse found, TOP=" + DoubleToString(fvg.Top) + " BOTTOM=" + DoubleToString(fvg.Bottom) + " Start=" + TimeToString(fvg.Start_Time));
-
-   return true;
+   return false; // Nothing valid at all this scan
 }

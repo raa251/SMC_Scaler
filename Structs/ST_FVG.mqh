@@ -6,5 +6,4 @@ struct ST_FVG
    double   Bottom;
    datetime Start_Time;
    datetime End_Time;
-   bool     Touched;
 };
