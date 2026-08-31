@@ -1,0 +1,492 @@
+//@version=6
+// Signal-only TradingView port of the SMC_Scaler MQL5 EA's setup detection.
+// No orders are placed - it only tracks the same HTF-FVG / IFVG state machine and fires
+// alert() calls at the two points the EA would otherwise have acted on:
+//   1) an IFVG was found after the HTF FVG was touched (state -> waiting for inversion)
+//   2) that held IFVG has since been inversed (the EA's actual entry trigger)
+//
+// Money-management/execution-only inputs (lot sizing, SL/TP, magic number, slippage,
+// min-SL-distance, runner position, spread/max-trades/daily-loss-profit filters) are dropped
+// since there is no order to size or protect here. The MQL5 news filter is dropped too - Pine
+// has no economic-calendar API to replicate MqlCalendarValue lookups with.
+indicator("SMC Scaler - Setup Alerts", overlay = true, max_boxes_count = 200, max_labels_count = 200)
+
+// === Strategy ===
+i_htf                = input.timeframe("15", "Higher timeframe for liquidity search", group = "Strategy")
+i_lookbackFVG         = input.int(10, "Candles to look back for IFVG", minval = 1, maxval = 97, group = "Strategy")
+i_maxCandlesInverse    = input.int(10, "Max candles to inverse FVG (0 = off)", minval = 0, group = "Strategy")
+i_maxCandlesReach      = input.int(30, "Max candles to reach FVG", minval = 0, maxval = 100, group = "Strategy")
+i_maxDipPct            = input.float(0.0, "Max dip into FVG (%, 0 = off)", minval = 0, group = "Strategy")
+i_maxDistInverse       = input.int(0, "Max distance to inverse FVG (points, 0 = off)", minval = 0, group = "Strategy")
+i_searchWithinHTF      = input.bool(true, "Search FVG within HTF FVG", group = "Strategy")
+i_minFVGSize           = input.int(0, "Min HTF FVG size (points)", minval = 0, group = "Strategy")
+i_maxFVGSize           = input.int(0, "Max HTF FVG size (points, 0 = off)", minval = 0, group = "Strategy")
+i_minIFVGSize          = input.int(0, "Min IFVG size (points)", minval = 0, group = "Strategy")
+i_maxIFVGSize          = input.int(0, "Max IFVG size (points, 0 = off)", minval = 0, group = "Strategy")
+
+// === Trend filter ===
+i_trendFilter   = input.string("None", "Trend filter", options = ["None", "EMA", "Structure"], group = "Trend Filter")
+i_emaTF         = input.timeframe("", "EMA timeframe (empty = chart TF)", group = "Trend Filter")
+i_smallEMA      = input.int(20, "Small EMA length", minval = 1, group = "Trend Filter")
+i_bigEMA        = input.int(50, "Big EMA length", minval = 1, group = "Trend Filter")
+i_minDiffEMA    = input.int(0, "Min EMA difference (points)", minval = 0, group = "Trend Filter")
+i_extremaRight  = input.int(2, "Free candles right for structure extrema (HTF)", minval = 1, maxval = 8, group = "Trend Filter")
+i_extremaLeft   = input.int(2, "Free candles left for structure extrema (HTF)", minval = 1, maxval = 8, group = "Trend Filter")
+
+// === Time filter (hours, chart/exchange timezone) ===
+i_start1 = input.int(8, "Session 1 start hour", minval = 0, maxval = 23, group = "Time Filter")
+i_end1   = input.int(20, "Session 1 end hour", minval = 0, maxval = 23, group = "Time Filter")
+i_start2 = input.int(-1, "Session 2 start hour (-1 = off)", minval = -1, maxval = 23, group = "Time Filter")
+i_end2   = input.int(-1, "Session 2 end hour (-1 = off)", minval = -1, maxval = 23, group = "Time Filter")
+
+// === Day filter ===
+i_mon = input.bool(true, "Monday", group = "Day Filter")
+i_tue = input.bool(true, "Tuesday", group = "Day Filter")
+i_wed = input.bool(true, "Wednesday", group = "Day Filter")
+i_thu = input.bool(true, "Thursday", group = "Day Filter")
+i_fri = input.bool(true, "Friday", group = "Day Filter")
+
+// === Alerts ===
+i_alertFound    = input.bool(true, "Alert when IFVG found (HTF FVG touched)", group = "Alerts")
+i_alertTouch    = input.bool(true, "Alert on first touch of the IFVG", group = "Alerts")
+i_alertInversed = input.bool(true, "Alert when IFVG inversed", group = "Alerts")
+
+// === Visuals ===
+i_showBoxes  = input.bool(true, "Draw HTF FVG / IFVG zones", group = "Visuals")
+i_showLabels = input.bool(true, "Show markers on chart when alerts fire", group = "Visuals")
+
+// === Points -> price ===
+pt = syminfo.mintick
+minFVGSizePrice     = i_minFVGSize * pt
+maxFVGSizePrice      = i_maxFVGSize * pt
+minIFVGSizePrice     = i_minIFVGSize * pt
+maxIFVGSizePrice     = i_maxIFVGSize * pt
+maxDistInversePrice  = i_maxDistInverse * pt
+minDiffEMAPrice       = i_minDiffEMA * pt
+
+// === HTF candle data (non-repainting: closed HTF bars only, plus current forming bar's time) ===
+extremaSpan = i_extremaLeft + 2 + i_extremaRight // matches nFreeCandlesForExtrema_Left + 2 + Right
+
+[htf_o1, htf_h1, htf_l1, htf_c1] = request.security(syminfo.tickerid, i_htf,
+     [open[1], high[1], low[1], close[1]], lookahead = barmerge.lookahead_off)
+htf_t1 = request.security(syminfo.tickerid, i_htf, time[1], lookahead = barmerge.lookahead_off)
+[htf_o2, htf_h2, htf_l2, htf_c2] = request.security(syminfo.tickerid, i_htf,
+     [open[2], high[2], low[2], close[2]], lookahead = barmerge.lookahead_off)
+[htf_o3, htf_h3, htf_l3, htf_c3] = request.security(syminfo.tickerid, i_htf,
+     [open[3], high[3], low[3], close[3]], lookahead = barmerge.lookahead_off)
+
+// Structure-filter lookback: opens/closes 1..20 bars back on the HTF (20 comfortably covers the
+// extremaSpan <= 18 possible with the input maxvals above).
+[htfOpens, htfCloses] = request.security(syminfo.tickerid, i_htf,
+     [array.from(open[1], open[2], open[3], open[4], open[5], open[6], open[7], open[8], open[9], open[10],
+                 open[11], open[12], open[13], open[14], open[15], open[16], open[17], open[18], open[19], open[20]),
+      array.from(close[1], close[2], close[3], close[4], close[5], close[6], close[7], close[8], close[9], close[10],
+                 close[11], close[12], close[13], close[14], close[15], close[16], close[17], close[18], close[19], close[20])],
+     lookahead = barmerge.lookahead_off)
+
+htfO(idx) => array.get(htfOpens, idx - 1)
+htfC(idx) => array.get(htfCloses, idx - 1)
+
+// === EMA filter data (only meaningful if i_trendFilter == "EMA") ===
+emaSmall = request.security(syminfo.tickerid, i_emaTF, ta.ema(close, i_smallEMA)[1], lookahead = barmerge.lookahead_off)
+emaBig   = request.security(syminfo.tickerid, i_emaTF, ta.ema(close, i_bigEMA)[1], lookahead = barmerge.lookahead_off)
+
+emaBullish() =>
+    i_trendFilter != "EMA" or emaSmall > emaBig + minDiffEMAPrice
+
+emaBearish() =>
+    i_trendFilter != "EMA" or emaSmall < emaBig - minDiffEMAPrice
+
+// === Structure swing high/low on HTF (mirrors M_SearchNewHigh / M_SearchNewLow) ===
+searchNewHigh() =>
+    midRight = i_extremaRight + 1
+    midLeft  = i_extremaRight + 2
+    bool c1 = true
+    for ii = 1 to i_extremaRight
+        if htfC(ii) > htfO(midRight) or htfO(ii) > htfO(midRight)
+            c1 := false
+            break
+    bool c2 = true
+    for ii = midLeft + 1 to extremaSpan
+        if htfC(ii) > htfC(midLeft) or htfO(ii) > htfC(midLeft)
+            c2 := false
+            break
+    bool c3 = htfO(midRight) > htfC(midRight) // bearish
+    bool c4 = htfO(midLeft) < htfC(midLeft)   // bullish
+    (c1 and c2 and c3 and c4) ? htfO(midRight) : na
+
+searchNewLow() =>
+    midRight = i_extremaRight + 1
+    midLeft  = i_extremaRight + 2
+    bool c1 = true
+    for ii = 1 to i_extremaRight
+        if htfC(ii) < htfO(midRight) or htfO(ii) < htfO(midRight)
+            c1 := false
+            break
+    bool c2 = true
+    for ii = midLeft + 1 to extremaSpan
+        if htfC(ii) < htfC(midLeft) or htfO(ii) < htfC(midLeft)
+            c2 := false
+            break
+    bool c3 = htfO(midRight) < htfC(midRight) // bullish
+    bool c4 = htfO(midLeft) > htfC(midLeft)   // bearish
+    (c1 and c2 and c3 and c4) ? htfO(midRight) : na
+
+// === Time / day filter (mirrors M_SessionFilterOK / M_DayOK) ===
+sessionOK() =>
+    h = hour(time)
+    (h >= i_start1 and h < i_end1) or ((h >= i_start2 and h < i_end2) and i_start2 != -1 and i_end2 != -1)
+
+dayOK() =>
+    dow = dayofweek(time)
+    (dow == dayofweek.monday and i_mon) or (dow == dayofweek.tuesday and i_tue) or
+     (dow == dayofweek.wednesday and i_wed) or (dow == dayofweek.thursday and i_thu) or
+     (dow == dayofweek.friday and i_fri)
+
+// === IFVG search on the chart timeframe (mirrors the current M_SearchFVG.mqh) ===
+// Freshest match wins; only ever moves forward in time (never reverts to an older, previously
+// superseded IFVG); zone check is against the HTF FVG's FAR boundary so candidates found once
+// price has already moved into the HTF FVG are still picked up.
+searchFVG(bool isLong, float htfTop, float htfBottom, int heldStartBar) =>
+    float outTop = na
+    float outBottom = na
+    int outStartBar = na
+    bool found = false
+    float tmpHigh = 0.0
+    float tmpLow = 1e10
+    for i = 1 to i_lookbackFVG
+        if high[i] > tmpHigh
+            tmpHigh := high[i]
+        if low[i] < tmpLow
+            tmpLow := low[i]
+
+        bool bMatch = false
+        float fTop = na
+        float fBottom = na
+
+        if isLong and open[i + 1] > close[i + 1] // middle candle bearish
+            bool c1 = low[i + 2] > high[i]
+            bool c2 = high[i] > htfBottom
+            bool c3 = high[i] >= tmpHigh
+            bool c4 = minIFVGSizePrice == 0 or (low[i + 2] - high[i] >= minIFVGSizePrice)
+            bool c5 = maxIFVGSizePrice == 0 or (low[i + 2] - high[i] <= maxIFVGSizePrice)
+            if c1 and c2 and c3 and c4 and c5
+                fTop := low[i + 2]
+                fBottom := high[i]
+                bMatch := true
+        else if (not isLong) and close[i + 1] > open[i + 1] // middle candle bullish
+            bool c1 = high[i + 2] < low[i]
+            bool c2 = low[i] < htfTop
+            bool c3 = low[i] <= tmpLow
+            bool c4 = minIFVGSizePrice == 0 or (low[i] - high[i + 2] >= minIFVGSizePrice)
+            bool c5 = maxIFVGSizePrice == 0 or (low[i] - high[i + 2] <= maxIFVGSizePrice)
+            if c1 and c2 and c3 and c4 and c5
+                fTop := low[i]
+                fBottom := high[i + 2]
+                bMatch := true
+
+        if bMatch
+            int candStartBar = bar_index - (i + 1)
+            if not na(heldStartBar) and candStartBar <= heldStartBar
+                break
+            outTop := fTop
+            outBottom := fBottom
+            outStartBar := candStartBar
+            found := true
+            break
+    [found, outTop, outBottom, outStartBar]
+
+// === Dip filter (mirrors M_DipOK) ===
+dipOK(bool isLong, float htfTop, float htfBottom, int candlesBack) =>
+    bool ok = true
+    if i_maxDipPct > 0
+        if isLong
+            dipMin = htfTop - (htfTop - htfBottom) * (i_maxDipPct / 100)
+            for i = 1 to candlesBack
+                if low[i] < dipMin
+                    ok := false
+                    break
+        else
+            dipMax = htfBottom + (htfTop - htfBottom) * (i_maxDipPct / 100)
+            for i = 1 to candlesBack
+                if high[i] > dipMax
+                    ok := false
+                    break
+    ok
+
+// === Persistent state (mirrors E_StateMachine + stGlobalVars) ===
+var string state = "WAIT_FOR_START" // WAIT_FOR_START, WAIT_FVG_REACHED, SEARCH_INVERSE_FVG, WAIT_HTF_FVG_EXIT, WAIT_FVG_INVERSED
+var bool   dirLong = true
+var float  htfTop = na
+var float  htfBottom = na
+var int    htfCreatedBar = na
+var int    fvgReachedBar = na
+var float  fvgTop = na
+var float  fvgBottom = na
+var int    fvgStartBar = na
+var bool   waitForNewCurrBar = false
+var bool   touchAlerted = false // whether the "first touch" alert already fired for the currently held IFVG
+var int    fvgFoundBar = na     // bar the currently held IFVG was found/switched to - touch is only checked AFTER this bar
+var e_dirHTF = "" // "LONG" / "SHORT" / "" - structure trend direction (E_TREND_FILTER == Structure)
+
+var box   htfBox = na
+var box   ifvgBox = na
+var int   lastHtfCreatedTime = na
+
+// Pine does not allow a user-defined function to reassign global variables, so the
+// reset/box-draw side effects that used to be their own functions are instead deferred via
+// these flags and applied inline (in global scope) once, at the end of each bar's evaluation.
+var bool pendingReset = false
+var bool pendingIfvgBox = false
+
+// --- TEMPORARY DIAGNOSTICS (remove once the "nothing shows" issue is confirmed fixed) ---
+var int    dbgGateRuns = 0
+var int    dbgHtfBarRuns = 0
+var string dbgLastDir = "none"
+var bool dbgLastC1 = false
+var bool dbgLastC2 = false
+var bool dbgLastC3 = false
+var bool dbgLastC4 = false
+
+fireAlert(bool enabled, string msg) =>
+    if enabled
+        alert(msg, alert.freq_once_per_bar)
+        if i_showLabels
+            label.new(bar_index, dirLong ? low : high, msg, style = dirLong ? label.style_label_up : label.style_label_down,
+                 color = dirLong ? color.lime : color.red, textcolor = color.white, size = size.small)
+
+// === Per-bar housekeeping ===
+if barstate.isnew
+    waitForNewCurrBar := false
+
+    // Structure trend runs on every new HTF bar, regardless of state (mirrors M_StructureTrendHTF).
+    // Gated on htf_t1 (the last CLOSED HTF bar's time) rather than the unshifted current-bar
+    // time - the latter is not well-defined under lookahead_off before that bar closes and was
+    // staying na forever, which silently prevented any HTF FVG detection from ever running.
+    dbgHtfBarRuns := dbgHtfBarRuns + 1 // increments every CTF bar - sanity check the script runs at all
+
+    if not na(htf_t1) and (na(lastHtfCreatedTime) or htf_t1 != lastHtfCreatedTime)
+        lastHtfCreatedTime := htf_t1
+        dbgGateRuns := dbgGateRuns + 1 // increments once per newly-closed HTF bar - if this stays 0, htf_t1 never becomes valid/changes
+
+        if i_trendFilter == "Structure"
+            float newHigh = searchNewHigh()
+            float newLow = searchNewLow()
+            var float lastHigh = na
+            var float lastLow = na
+            if not na(newHigh)
+                lastHigh := newHigh
+            if not na(newLow)
+                lastLow := newLow
+            if not na(lastHigh) and not na(lastLow)
+                if htfC(1) > lastHigh
+                    e_dirHTF := "LONG"
+                if htfC(1) < lastLow
+                    e_dirHTF := "SHORT"
+
+        // HTF FVG detection only happens while idle - matches M_NewBar_HigherTF's early return
+        // once a setup is already being tracked.
+        if state == "WAIT_FOR_START"
+            if htf_o2 < htf_c2 // middle candle bullish -> LONG setup
+                bool c1 = htf_h3 <= htf_l1
+                bool c2 = i_trendFilter == "EMA" ? emaBullish() : i_trendFilter == "Structure" ? e_dirHTF == "LONG" : true
+                bool c3 = minFVGSizePrice == 0 or (htf_l1 - htf_h3 >= minFVGSizePrice)
+                bool c4 = maxFVGSizePrice == 0 or (htf_l1 - htf_h3 <= maxFVGSizePrice)
+                dbgLastDir := "LONG candle"
+                dbgLastC1 := c1
+                dbgLastC2 := c2
+                dbgLastC3 := c3
+                dbgLastC4 := c4
+                if c1 and c2 and c3 and c4
+                    htfTop := htf_l1
+                    htfBottom := htf_h3
+                    htfCreatedBar := bar_index
+                    dirLong := true
+                    state := "WAIT_FVG_REACHED"
+                    if i_showBoxes
+                        // Previous htfBox (if any) is left as-is on the chart as a historical
+                        // record - only the handle moves on, so box.set_right() below never
+                        // extends a box that no longer belongs to the live setup.
+                        htfBox := box.new(left = bar_index, top = htfTop, bottom = htfBottom, right = bar_index,
+                             border_color = color.green, bgcolor = color.new(color.green, 88), extend = extend.none)
+                        label.new(bar_index, htfTop, "HTF FVG (" + i_htf + ")", style = label.style_label_down,
+                             color = color.green, textcolor = color.white, size = size.small)
+            else if htf_o2 > htf_c2 // middle candle bearish -> SHORT setup
+                bool c1 = htf_h1 < htf_l3
+                bool c2 = i_trendFilter == "EMA" ? emaBearish() : i_trendFilter == "Structure" ? e_dirHTF == "SHORT" : true
+                bool c3 = minFVGSizePrice == 0 or (htf_l3 - htf_h1 >= minFVGSizePrice)
+                bool c4 = maxFVGSizePrice == 0 or (htf_l3 - htf_h1 <= maxFVGSizePrice)
+                dbgLastDir := "SHORT candle"
+                dbgLastC1 := c1
+                dbgLastC2 := c2
+                dbgLastC3 := c3
+                dbgLastC4 := c4
+                if c1 and c2 and c3 and c4
+                    htfTop := htf_l3
+                    htfBottom := htf_h1
+                    htfCreatedBar := bar_index
+                    dirLong := false
+                    state := "WAIT_FVG_REACHED"
+                    if i_showBoxes
+                        htfBox := box.new(left = bar_index, top = htfTop, bottom = htfBottom, right = bar_index,
+                             border_color = color.red, bgcolor = color.new(color.red, 88), extend = extend.none)
+                        label.new(bar_index, htfBottom, "HTF FVG (" + i_htf + ")", style = label.style_label_up,
+                             color = color.red, textcolor = color.white, size = size.small)
+
+// Keep the HTF box's right edge current while its setup is still alive.
+if i_showBoxes and not na(htfBox) and state != "WAIT_FOR_START"
+    box.set_right(htfBox, bar_index)
+if i_showBoxes and not na(ifvgBox) and (state == "WAIT_HTF_FVG_EXIT" or state == "WAIT_FVG_INVERSED")
+    box.set_right(ifvgBox, bar_index)
+
+// === State machine (runs every tick, mirrors M_StateMachine -> OnTick) ===
+if state == "WAIT_FVG_REACHED"
+    if (bar_index - htfCreatedBar > i_maxCandlesReach) or (i_maxCandlesReach < 0 or i_maxCandlesReach > 100)
+        pendingReset := true
+    else if dirLong and low < htfTop
+        fvgReachedBar := bar_index
+        state := "SEARCH_INVERSE_FVG"
+    else if (not dirLong) and high > htfBottom
+        fvgReachedBar := bar_index
+        state := "SEARCH_INVERSE_FVG"
+
+if state == "SEARCH_INVERSE_FVG"
+    [found, fTop, fBottom, fStartBar] = searchFVG(dirLong, htfTop, htfBottom, na)
+    if found
+        fvgTop := fTop
+        fvgBottom := fBottom
+        fvgStartBar := fStartBar
+        state := "WAIT_FVG_INVERSED"
+        pendingIfvgBox := true
+        touchAlerted := false
+        fvgFoundBar := bar_index
+        fireAlert(i_alertFound, (dirLong ? "LONG" : "SHORT") + " setup: IFVG found after HTF FVG touch")
+    else if i_searchWithinHTF
+        waitForNewCurrBar := true
+        state := "WAIT_HTF_FVG_EXIT"
+    else
+        pendingReset := true
+
+if state == "WAIT_HTF_FVG_EXIT"
+    if (close[1] > htfTop or close[1] < htfBottom) and not waitForNewCurrBar
+        pendingReset := true
+    else if dirLong and close[2] < open[2] // bearish candle
+        if low[3] > high[1]
+            fvgTop := low[3]
+            fvgBottom := high[1]
+            fvgStartBar := bar_index - 2
+            state := "WAIT_FVG_INVERSED"
+            pendingIfvgBox := true
+            touchAlerted := false
+            fvgFoundBar := bar_index
+            fireAlert(i_alertFound, "LONG setup: IFVG formed within HTF FVG")
+    else if (not dirLong) and close[2] > open[2] // bullish candle
+        if high[3] < low[1]
+            fvgTop := low[1]
+            fvgBottom := high[3]
+            fvgStartBar := bar_index - 2
+            state := "WAIT_FVG_INVERSED"
+            pendingIfvgBox := true
+            touchAlerted := false
+            fvgFoundBar := bar_index
+            fireAlert(i_alertFound, "SHORT setup: IFVG formed within HTF FVG")
+
+if state == "WAIT_FVG_INVERSED"
+    bool alreadyInverted = (dirLong and close[1] > fvgTop) or ((not dirLong) and close[1] < fvgBottom)
+
+    if not alreadyInverted and barstate.isnew
+        [found2, fTop2, fBottom2, fStartBar2] = searchFVG(dirLong, htfTop, htfBottom, fvgStartBar)
+        if found2
+            fvgTop := fTop2
+            fvgBottom := fBottom2
+            fvgStartBar := fStartBar2
+            pendingIfvgBox := true
+            touchAlerted := false
+            fvgFoundBar := bar_index
+            fireAlert(i_alertFound, (dirLong ? "LONG" : "SHORT") + " setup: switched to a fresher IFVG")
+
+    // First touch: price has reached into the held IFVG zone at all, independent of whether it
+    // goes on to invert it - same "low/high crossed the near boundary" style check used for the
+    // HTF FVG's own "reached" trigger above, just applied to the IFVG. Uses the live/forming bar
+    // (not close[1]) so it fires as early as possible, same as the HTF touch check does.
+    //
+    // Only checked from the bar AFTER the IFVG was found/switched to (bar_index > fvgFoundBar),
+    // never on the very same bar - searchFVG scans backward through already-closed candles, so
+    // a freshly found/switched-to candidate can have a zone that already geometrically overlaps
+    // the live bar purely because it was found by looking back from here, without price having
+    // just now, freshly touched it. Waiting one bar means only a genuine subsequent touch fires.
+    if not touchAlerted and bar_index > fvgFoundBar and ((dirLong and low <= fvgTop) or ((not dirLong) and high >= fvgBottom))
+        touchAlerted := true
+        fireAlert(i_alertTouch, (dirLong ? "LONG" : "SHORT") + " setup: IFVG touched")
+
+    if (bar_index - fvgStartBar > i_maxCandlesInverse) and i_maxCandlesInverse != 0
+        pendingReset := true
+    else if not dipOK(dirLong, htfTop, htfBottom, bar_index - fvgReachedBar)
+        pendingReset := true
+    else if dirLong and maxDistInversePrice != 0 and close[1] < fvgBottom - maxDistInversePrice
+        pendingReset := true
+    else if (not dirLong) and maxDistInversePrice != 0 and close[1] > fvgTop + maxDistInversePrice
+        pendingReset := true
+    else if dirLong and close[1] <= fvgTop
+        // not inversed yet, keep waiting
+        na
+    else if (not dirLong) and close[1] >= fvgBottom
+        // not inversed yet, keep waiting
+        na
+    else
+        // inversed - this is where the EA would have entered
+        if sessionOK() and dayOK()
+            fireAlert(i_alertInversed, (dirLong ? "LONG" : "SHORT") + " setup: IFVG inversed")
+        pendingReset := true
+
+// === Deferred side effects (must run in global scope, not inside a function) ===
+if pendingIfvgBox
+    if i_showBoxes
+        // Previous ifvgBox (if any) is left as-is on the chart, same reasoning as htfBox above.
+        ifvgBox := box.new(left = fvgStartBar, top = fvgTop, bottom = fvgBottom, right = bar_index,
+             border_color = color.blue, bgcolor = color.new(color.blue, 85), extend = extend.none)
+        label.new(fvgStartBar, dirLong ? fvgTop : fvgBottom, "IFVG (" + timeframe.period + ")",
+             style = dirLong ? label.style_label_down : label.style_label_up,
+             color = color.blue, textcolor = color.white, size = size.small)
+    pendingIfvgBox := false
+
+if pendingReset
+    state := "WAIT_FOR_START"
+    htfTop := na
+    htfBottom := na
+    htfCreatedBar := na
+    fvgReachedBar := na
+    fvgTop := na
+    fvgBottom := na
+    fvgStartBar := na
+    waitForNewCurrBar := false
+    touchAlerted := false
+    fvgFoundBar := na
+    // Detach (not delete) the box handles: the boxes themselves stay on the chart frozen at
+    // their final width as a historical record, but the "still live, keep extending" checks
+    // above (not na(htfBox)/ifvgBox) now correctly skip them until a new episode starts.
+    htfBox := na
+    ifvgBox := na
+    pendingReset := false
+
+// --- TEMPORARY DIAGNOSTICS TABLE (remove once the "nothing shows" issue is confirmed fixed) ---
+if barstate.islast
+    var table dbgTable = table.new(position.top_right, 2, 9, bgcolor = color.new(color.black, 20), border_width = 1)
+    table.cell(dbgTable, 0, 0, "CTF bars seen", text_color = color.white)
+    table.cell(dbgTable, 1, 0, str.tostring(dbgHtfBarRuns), text_color = color.white)
+    table.cell(dbgTable, 0, 1, "HTF bar closes seen", text_color = color.white)
+    table.cell(dbgTable, 1, 1, str.tostring(dbgGateRuns), text_color = color.white)
+    table.cell(dbgTable, 0, 2, "state", text_color = color.white)
+    table.cell(dbgTable, 1, 2, state, text_color = color.yellow)
+    table.cell(dbgTable, 0, 3, "last HTF candle checked", text_color = color.white)
+    table.cell(dbgTable, 1, 3, dbgLastDir, text_color = color.white)
+    table.cell(dbgTable, 0, 4, "c1 (gap)", text_color = color.white)
+    table.cell(dbgTable, 1, 4, str.tostring(dbgLastC1), text_color = dbgLastC1 ? color.lime : color.red)
+    table.cell(dbgTable, 0, 5, "c2 (trend filter)", text_color = color.white)
+    table.cell(dbgTable, 1, 5, str.tostring(dbgLastC2), text_color = dbgLastC2 ? color.lime : color.red)
+    table.cell(dbgTable, 0, 6, "c3 (min size)", text_color = color.white)
+    table.cell(dbgTable, 1, 6, str.tostring(dbgLastC3), text_color = dbgLastC3 ? color.lime : color.red)
+    table.cell(dbgTable, 0, 7, "c4 (max size)", text_color = color.white)
+    table.cell(dbgTable, 1, 7, str.tostring(dbgLastC4), text_color = dbgLastC4 ? color.lime : color.red)
+    table.cell(dbgTable, 0, 8, "htf_t1 raw", text_color = color.white)
+    table.cell(dbgTable, 1, 8, na(htf_t1) ? "na" : str.format_time(htf_t1, "yyyy-MM-dd HH:mm"), text_color = na(htf_t1) ? color.red : color.lime)
